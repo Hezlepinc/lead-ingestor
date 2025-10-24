@@ -52,9 +52,15 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
     page.on("request", async (req) => {
       const reqUrl = req.url();
       const method = req.method();
+      const headersAll = (req.headers && req.headers()) || {};
+      const headers = Object.fromEntries(
+        Object.entries(headersAll).filter(([k]) =>
+          !/^cookie$|^authorization$/i.test(k)
+        )
+      );
 
       // 1️⃣ Claim request (actual claim or accept)
-      if (/\/api\/opportunity\/\d+\/claim/i.test(reqUrl) && method === "POST") {
+      if ((/\/api\/opportunity\/\d+\/claim/i.test(reqUrl) || /\/api\/.*claim/i.test(reqUrl)) && method === "POST") {
         const rawData = req.postData();
         let data;
         try {
@@ -69,6 +75,8 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
           region,
           account: cookiePath,
           url: reqUrl,
+          method,
+          headers,
           payload: data,
           timestamp: new Date(),
         };
@@ -122,6 +130,7 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
             region,
             url: reqUrl,
             method,
+            headers,
             payload: data || null,
             timestamp: new Date(),
           });
