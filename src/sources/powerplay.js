@@ -5,7 +5,6 @@ import fs from "fs";
 
 //
 // === Render / Playwright runtime fail-safes ===
-// These keep Chromium working inside Render containers.
 //
 process.env.PLAYWRIGHT_BROWSERS_PATH =
   process.env.PLAYWRIGHT_BROWSERS_PATH || "/opt/render/project/.cache/ms-playwright";
@@ -15,10 +14,18 @@ process.env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD =
 export async function startPowerPlayMonitor({ onLead, url, cookiePath, region }) {
   try {
     log(`⚙️ Launching headless Chromium for ${region || "unnamed region"}...`);
-    const browser = await chromium.launch({ headless: true });
+    const browser = await chromium.launch({
+      headless: true,
+      args: [
+        "--disable-dev-shm-usage",
+        "--no-sandbox",
+        "--disable-gpu",
+        "--disable-software-rasterizer",
+      ],
+    });
     const context = await browser.newContext();
 
-    // === Load cookies if available ===
+    // === Load cookies ===
     if (cookiePath && fs.existsSync(cookiePath)) {
       const cookies = JSON.parse(fs.readFileSync(cookiePath, "utf8"));
       await context.addCookies(cookies);
@@ -29,14 +36,18 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
 
     const page = await context.newPage();
     const baseUrl = url || process.env.POWERPLAY_URLS?.split(",")[0];
-    if (!baseUrl) throw new Error("POWERPLAY_URLS missing or empty in environment variables.");
+    if (!baseUrl)
+      throw new Error("POWERPLAY_URLS missing or empty in environment variables.");
 
     const opportunitiesUrl = `${baseUrl.replace(/\/$/, "")}/opportunities`;
     log(`🕵️ Monitoring PowerPlay (${region || "region unknown"}) → ${opportunitiesUrl}`);
 
     // === Defensive navigation ===
     try {
-      await page.goto(opportunitiesUrl, { waitUntil: "domcontentloaded", timeout: 60000 });
+      await page.goto(opportunitiesUrl, {
+        waitUntil: "domcontentloaded",
+        timeout: 60000,
+      });
       log(`✅ Loaded Opportunities page for ${region || "region"}`);
     } catch (err) {
       log(`⚠️ Page navigation failed (${opportunitiesUrl}): ${err.message}`);
@@ -44,11 +55,43 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
       return;
     }
 
-    // === Watch for background network traffic ===
+    // =======================================================
+    // === Watch for PowerPlay network traffic (main APIs) ===
+    // =======================================================
     page.on("request", async (req) => {
       const reqUrl = req.url();
-      // Match PowerPlay's Opportunity / Lead / Quote APIs
-      if (/opportunit|lead|submit|quote/i.test(reqUrl) && req.method() === "POST") {
+      const method = req.method();
+
+      // 1️⃣ Opportunity Feed (new / search)
+      if (/\/api\/opportunit(y|ies|y\/search)/i.test(reqUrl)) {
+        const data = req.postData() || null;
+        log(`📥 Feed detected (${region}): ${reqUrl}`);
+        if (onLead) {
+          await onLead({
+            type: "feed",
+            region,
+            url: reqUrl,
+            payload: data,
+            timestamp: new Date(),
+          });
+        }
+      }
+
+      // 2️⃣ Opportunity Detail (when viewing one)
+      if (/\/api\/opportunity\/\d+$/i.test(reqUrl) && method === "GET") {
+        log(`📄 Detail request detected (${region}): ${reqUrl}`);
+        if (onLead) {
+          await onLead({
+            type: "detail",
+            region,
+            url: reqUrl,
+            timestamp: new Date(),
+          });
+        }
+      }
+
+      // 3️⃣ Claim request (actual claim or accept)
+      if (/\/api\/opportunity\/\d+\/claim/i.test(reqUrl) && method === "POST") {
         const rawData = req.postData();
         let data;
         try {
@@ -57,37 +100,86 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
           data = rawData;
         }
 
-        const lead = {
+        const claimEvent = {
+          type: "claim",
           source: "PowerPlay",
-          region: region || "unknown",
+          region,
           account: cookiePath,
-          name: data?.name || data?.customerName || "",
-          email: data?.email || data?.customerEmail || "",
-          phone: data?.phone || data?.customerPhone || "",
-          zip: data?.zip || data?.postalCode || "",
+          url: reqUrl,
           payload: data,
+          timestamp: new Date(),
         };
 
-        log(`📦 Captured Opportunity (${region || "region"}):`, lead);
+        log(`🚀 Captured Claim Request (${region}):`, claimEvent);
 
         try {
-          if (onLead) await onLead(lead);
-          await sendOfficeEmail({ lead, sourceAccount: region || baseUrl });
-
-          if (lead.email) {
-            await sendCustomerEmail({
-              to: lead.email,
-              name: lead.name,
-              schedulerUrl: `${process.env.SCHEDULER_LINK}${lead.email}`,
-            });
-          }
+          if (onLead) await onLead(claimEvent);
+          await sendOfficeEmail({ lead: claimEvent, sourceAccount: region || baseUrl });
         } catch (err) {
-          log(`❌ Error handling lead for ${region || "region"}: ${err.message}`);
+          log(`❌ Error handling claim for ${region}: ${err.message}`);
         }
       }
     });
 
-    // === Keep alive indefinitely ===
+    // 4️⃣ Capture responses (optional debugging)
+    page.on("response", async (res) => {
+      const url = res.url();
+      if (/\/api\/opportunit/i.test(url)) {
+        const status = res.status();
+        const body = await res.text();
+        log(`📬 Response (${status}) from ${url}`);
+        if (onLead) {
+          await onLead({
+            type: "response",
+            region,
+            url,
+            status,
+            body,
+            timestamp: new Date(),
+          });
+        }
+      }
+    });
+
+    // =======================================================
+    // === TEST MODE (optional local verification) ===========
+    // =======================================================
+    if (process.env.TEST_MODE === "true") {
+      const fakeData = {
+        customerName: "Test Customer",
+        customerEmail: "testcustomer@example.com",
+        customerPhone: "555-000-1234",
+        postalCode: "32218",
+      };
+      const lead = {
+        source: "PowerPlay",
+        region: region || "Test Region",
+        account: cookiePath,
+        name: fakeData.customerName,
+        email: fakeData.customerEmail,
+        phone: fakeData.customerPhone,
+        zip: fakeData.postalCode,
+        payload: fakeData,
+      };
+
+      log(`🧪 TEST: Simulated Opportunity (${region || "region"}):`, lead);
+
+      if (onLead) await onLead(lead);
+      await sendOfficeEmail({ lead, sourceAccount: region || baseUrl });
+
+      if (lead.email) {
+        await sendCustomerEmail({
+          to: lead.email,
+          name: lead.name,
+          schedulerUrl: `${process.env.SCHEDULER_LINK}${lead.email}`,
+        });
+      }
+      log("✅ TEST: Simulated opportunity processed successfully.");
+    }
+
+    // =======================================================
+    // === Keep the monitor alive indefinitely ===============
+    // =======================================================
     await new Promise(() => {});
   } catch (err) {
     log(`❌ PowerPlay monitor failed to start: ${err.message}`);
