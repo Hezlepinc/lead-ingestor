@@ -48,8 +48,15 @@ const ask = (question) => {
     viewport: { width: 1280, height: 900 },
     args: ["--start-maximized", "--no-sandbox", "--disable-blink-features=AutomationControlled"],
   });
-
-  const page = await browser.newPage();
+  // Reuse existing tab if present (persistent context may auto-open)
+  let page = browser.pages()[0] || (await browser.newPage());
+  // Track new tabs and prefer the one that lands on powerplay
+  browser.on("page", (p) => {
+    try {
+      const u = p.url();
+      if (u.includes("powerplay.generac.com")) page = p;
+    } catch {}
+  });
 
   console.log(`➡️ Opening PowerPlay login page: ${loginUrl}`);
   await page.goto(loginUrl, { waitUntil: "domcontentloaded" });
@@ -62,14 +69,25 @@ const ask = (question) => {
   console.log("➡️ Navigating to Opportunities page (Angular-safe)...");
   try {
     await page.waitForSelector("body", { timeout: 60000 });
-    await page.evaluate(() => {
-      window.location.hash = "#/opportunities";
-    });
+    // Try direct hash URL first
+    try {
+      await page.goto("https://powerplay.generac.com/app/#/opportunities", { waitUntil: "domcontentloaded", timeout: 30000 });
+    } catch {}
+    // Fallback: set hash manually
+    try {
+      await page.evaluate(() => { window.location.hash = "#/opportunities"; });
+    } catch {}
+    // Final fallback: attempt to click any nav element with Opportunities text
+    try {
+      await page.click('text=Opportunit', { timeout: 5000 });
+    } catch {}
     await page.waitForFunction(
-      () => window.location.hash.includes("opportunit"),
-      { timeout: 15000 }
+      () => window.location.hash.includes("opportunit") ||
+        document.querySelector("app-opportunities") ||
+        Array.from(document.querySelectorAll("h1,h2,h3,nav,button,a,span")).some(e => e.textContent && e.textContent.toLowerCase().includes("opportunit")),
+      { timeout: 60000 }
     );
-    console.log("✅ Angular router moved to Opportunities view.");
+    console.log("✅ Opportunities view is active.");
   } catch (err) {
     console.warn("⚠️ Could not programmatically open Opportunities:", err.message);
   }
