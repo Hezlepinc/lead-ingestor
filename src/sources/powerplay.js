@@ -2,6 +2,10 @@ import { chromium } from "playwright";
 import { sendCustomerEmail, sendOfficeEmail } from "../utils/emailer.js";
 import { log } from "../utils/logger.js";
 import fs from "fs";
+import path from "path";
+import { Auth } from "../models/Auth.js";
+import { Opportunity } from "../models/Opportunity.js";
+import { claimOpportunity } from "../processors/claimOpportunity.js";
 
 //
 // === Render / Playwright runtime fail-safes ===
@@ -25,6 +29,13 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
     });
     const context = await browser.newContext();
 
+    // --- Auto-validate cookies ---
+    try {
+      const existingCookies = await context.cookies();
+      const expired = existingCookies.some((c) => c.expires && c.expires < Date.now() / 1000);
+      if (expired) log(`⚠️ Cookies expired for ${region}`);
+    } catch {}
+
     // === Load cookies ===
     if (cookiePath && fs.existsSync(cookiePath)) {
       const cookies = JSON.parse(fs.readFileSync(cookiePath, "utf8"));
@@ -33,6 +44,22 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
     } else {
       log(`⚠️ No cookies found at ${cookiePath}. You may need to run cookieSaver.js locally.`);
     }
+
+    // Optional auto-save when login page is detected
+    page.on("framenavigated", async (frame) => {
+      const fUrl = frame.url();
+      if (/(login|signin)/i.test(fUrl)) {
+        try {
+          const outDir = path.dirname(cookiePath || "cookies/unknown.json");
+          const outFile = path.join(outDir, `${(region || "region").toLowerCase().replace(/[^a-z0-9-]+/g, "-")}.json`);
+          const state = await context.cookies();
+          fs.writeFileSync(outFile, JSON.stringify(state, null, 2));
+          log(`🔐 ${region}: login detected, saved new cookies → ${outFile}`);
+        } catch (e) {
+          log(`⚠️ Failed to save cookies on login for ${region}: ${e.message}`);
+        }
+      }
+    });
 
     const page = await context.newPage();
     const autoClaimEnabled = process.env.AUTO_CLAIM === "true";
@@ -232,7 +259,7 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
               body = null;
             }
           }
-          log(`📬 Response (${status}) from ${url}`);
+      log(`📬 Response (${status}) from ${url}`);
           if (onLead) {
             await onLead({
               type: "response",
@@ -249,6 +276,27 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
             const ids = extractOpportunityIdsFromJson(parsedJson);
             if (ids.length) await attemptAutoClaim(url, ids);
           }
+
+      // Persist opportunities and trigger claim for unseen ones
+      if (/\/api\/opportunity\/search/i.test(url) && parsedJson) {
+        const items = Array.isArray(parsedJson?.data) ? parsedJson.data : (Array.isArray(parsedJson) ? parsedJson : []);
+        if (items.length) {
+          const cookieHeader = (await context.cookies()).map((c) => `${c.name}=${c.value}`).join("; ");
+          const idx = url.toLowerCase().indexOf("/api/");
+          const apiRoot = idx !== -1 ? url.slice(0, idx + 5) : `${baseUrl.replace(/\/$/, "")}/powerplay3-server/api/`;
+          for (const item of items) {
+            const id = String(item.opportunityId || item.opportunityID || item.id || "");
+            if (!id) continue;
+            const exists = await Opportunity.findOne({ opportunityId: id }).lean();
+            if (!exists) {
+              await Opportunity.create({ opportunityId: id, region, raw: item });
+              if (autoClaimEnabled) {
+                await claimOpportunity({ page, region, id, apiRoot, cookieHeader });
+              }
+            }
+          }
+        }
+      }
         }
       } catch (err) {
         log(`⚠️ Response handler error: ${err.message}`);

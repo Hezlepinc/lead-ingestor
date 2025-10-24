@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "test": "node scripts/testPowerplay.js",
-    "export:events": "node scripts/export-events.js"
+    "export:events": "node scripts/export-events.js",
+    "health": "node scripts/health.mjs"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.0",
