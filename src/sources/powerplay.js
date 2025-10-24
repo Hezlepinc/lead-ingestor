@@ -105,6 +105,90 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
     // Navigation moved below so that request/response listeners capture initial traffic
 
     // =======================================================
+    // === Helpers: claim orchestration and fast pulls       ===
+    // =======================================================
+    let backoffUntilTs = 0;
+
+    async function processOpportunitySummaryItems(items, apiUrlForRoot) {
+      if (!Array.isArray(items) || !items.length) return;
+      try {
+        const cookieHeader = (await context.cookies()).map((c) => `${c.name}=${c.value}`).join("; ");
+        const idx = apiUrlForRoot.toLowerCase().indexOf("/api/");
+        const apiRoot = idx !== -1 ? apiUrlForRoot.slice(0, idx + 5) : `${baseUrl.replace(/\/$/, "")}/powerplay3-server/api/`;
+
+        for (const opp of items) {
+          const oppId = String(opp.opportunityId || opp.opportunityID || opp.id || "");
+          const statusText = String(opp.status || opp.Status || opp.state || "");
+          if (!oppId) continue;
+
+          try {
+            const exists = await Opportunity.findOne({ opportunityId: oppId }).lean();
+            if (!exists) {
+              await Opportunity.create({ opportunityId: oppId, region, raw: opp });
+            }
+          } catch { /* ignore */ }
+
+          if (statusText === "E0004") {
+            log(`🧲 New unclaimed opportunity detected (${region}): ${oppId}${opp.customerFirstName ? ` for ${opp.customerFirstName} ${opp.customerLastName || ""}` : ""}`);
+            if (autoClaimEnabled) {
+              if (Date.now() < backoffUntilTs) {
+                log(`⏸️ Backoff active for ${region}, skipping claim ${oppId}`);
+                continue;
+              }
+              try {
+                const result = await claimOpportunity({ page, region, id: oppId, apiRoot, cookieHeader });
+                if (result && typeof result.status === "number" && result.status === 429) {
+                  backoffUntilTs = Date.now() + 120000; // 2 minutes
+                  log(`⚠️ ${region}: throttled on claim ${oppId}, backing off 2m`);
+                }
+              } catch (err) {
+                log(`⚠️ Auto-claim error (${region}) ${oppId}: ${err.message}`);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        log(`⚠️ processOpportunitySummaryItems error (${region}): ${err.message}`);
+      }
+    }
+
+    async function pullSummaryAndClaim() {
+      try {
+        const cookieHeader = (await context.cookies()).map((c) => `${c.name}=${c.value}`).join("; ");
+        const headers = {
+          accept: "application/json, text/plain, */*",
+          referer: dashboardUrl,
+          ...(cookieHeader ? { cookie: cookieHeader } : {}),
+        };
+        const pendingUrl = `${appRoot}/powerplay3-server/api/OpportunitySummary/Pending/Dealer?PageSize=1000`;
+        const searchUrl = `${appRoot}/powerplay3-server/api/OpportunitySummary/GetByDealerId/Search`;
+
+        const [pendingResp, searchResp] = await Promise.all([
+          page.request.get(pendingUrl, { headers }),
+          page.request.get(searchUrl, { headers }),
+        ]);
+
+        try {
+          if (pendingResp.ok()) {
+            const json = await pendingResp.json().catch(() => null);
+            const items = Array.isArray(json?.pagedResults) ? json.pagedResults : (Array.isArray(json?.data) ? json.data : (Array.isArray(json) ? json : []));
+            await processOpportunitySummaryItems(items, pendingUrl);
+          }
+        } catch {}
+
+        try {
+          if (searchResp.ok()) {
+            const json = await searchResp.json().catch(() => null);
+            const items = Array.isArray(json?.pagedResults) ? json.pagedResults : (Array.isArray(json?.data) ? json.data : (Array.isArray(json) ? json : []));
+            await processOpportunitySummaryItems(items, searchUrl);
+          }
+        } catch {}
+      } catch (err) {
+        log(`⚠️ pullSummaryAndClaim error (${region}): ${err.message}`);
+      }
+    }
+
+    // =======================================================
     // === Watch for PowerPlay network traffic (main APIs) ===
     // =======================================================
     page.on("request", async (req) => {
@@ -288,6 +372,15 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
             }
           }
       log(`📬 Response (${status}) from ${url}`);
+
+          // Immediate re-scan on auth loss for UserProfile endpoint
+          if (status === 401 && /\/api\/userprofile/i.test(url)) {
+            log(`🔐 ${region}: 401 detected → refreshing session and re-scanning`);
+            try {
+              await captureAndSaveTokens("401");
+            } catch {}
+            await pullSummaryAndClaim();
+          }
           if (onLead) {
             await onLead({
               type: "response",
@@ -308,41 +401,8 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
               const items = Array.isArray(parsedJson?.pagedResults)
                 ? parsedJson.pagedResults
                 : (Array.isArray(parsedJson?.data) ? parsedJson.data : (Array.isArray(parsedJson) ? parsedJson : []));
-
-              if (items.length) {
-                // Compute API root and cookies once
-                const idx = url.toLowerCase().indexOf("/api/");
-                const apiRoot = idx !== -1 ? url.slice(0, idx + 5) : `${baseUrl.replace(/\/$/, "")}/powerplay3-server/api/`;
-                const cookieHeader = (await context.cookies()).map((c) => `${c.name}=${c.value}`).join("; ");
-
-                for (const opp of items) {
-                  const oppId = String(opp.opportunityId || opp.opportunityID || opp.id || "");
-                  const statusText = String(opp.status || opp.Status || opp.state || "");
-                  if (!oppId) continue;
-
-                  // Persist opportunity document if unseen
-                  try {
-                    const exists = await Opportunity.findOne({ opportunityId: oppId }).lean();
-                    if (!exists) {
-                      await Opportunity.create({ opportunityId: oppId, region, raw: opp });
-                    }
-                  } catch { /* ignore persistence errors here */ }
-
-                  if (statusText === "E0004") {
-                    log(`🧲 New unclaimed opportunity detected (${region}): ${oppId}${opp.customerFirstName ? ` for ${opp.customerFirstName} ${opp.customerLastName || ""}` : ""}`);
-                    if (autoClaimEnabled) {
-                      try {
-                        await claimOpportunity({ page, region, id: oppId, apiRoot, cookieHeader });
-                      } catch (err) {
-                        log(`⚠️ Auto-claim error (${region}) ${oppId}: ${err.message}`);
-                      }
-                    }
-                  }
-                }
-              }
-
-              // We handled claim attempts from this response; skip generic auto-claim below
-              return;
+              await processOpportunitySummaryItems(items, url);
+              return; // skip generic handler
             }
           } catch (e) {
             log(`⚠️ OpportunitySummary handler error (${region}): ${e.message}`);

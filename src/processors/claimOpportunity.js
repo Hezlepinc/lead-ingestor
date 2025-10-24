@@ -33,7 +33,7 @@ export async function claimOpportunity({ page, region, id, apiRoot, cookieHeader
         try { body = await res.text(); } catch { /* ignore */ }
         const ms = Date.now() - started;
         log(`⚡ ${region}: claim ${id} → ${status} (${ms} ms)`);
-        await Claim.create({ region, opportunityId: String(id), status, responseBody: body });
+        await Claim.create({ region, opportunityId: String(id), status, latencyMs: ms, responseBody: body });
         return { status, body };
       } catch (err) {
         lastError = err;
