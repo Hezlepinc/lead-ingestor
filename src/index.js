@@ -96,6 +96,7 @@ import { log } from "./utils/logger.js";
     const region = regionsForRun[i] || `Dealer ${i + 1}`;
 
     log(`🧭 Initializing monitor for ${region} using ${cookiePath}`);
+    log(`🕵️ Monitoring PowerPlay (${region}) → https://powerplay.generac.com/app/`);
     startPowerPlayMonitor({ onLead: handleLead, url, cookiePath, region });
 
     // Small delay between launches
