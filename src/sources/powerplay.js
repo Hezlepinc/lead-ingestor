@@ -40,9 +40,11 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
     if (!baseUrl)
       throw new Error("POWERPLAY_URLS missing or empty in environment variables.");
 
-    // Navigate to dashboard where claims panel lives
+    // Navigate to dashboard where claims panel lives; also prepare opportunities URL
     const trimmed = baseUrl.replace(/\/+$/, "");
-    const dashboardUrl = /\/app$/i.test(trimmed) ? `${trimmed}/` : `${trimmed}/app/`;
+    const appRoot = /\/app$/i.test(trimmed) ? trimmed : `${trimmed}/app`;
+    const dashboardUrl = `${appRoot}/`;
+    const opportunitiesUrl = `${appRoot}/opportunities`;
     log(`🕵️ Monitoring PowerPlay (${region || "region unknown"}) → ${dashboardUrl}`);
 
     // Navigation moved below so that request/response listeners capture initial traffic
@@ -264,6 +266,15 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
       log(`⚠️ Page navigation failed (${dashboardUrl}): ${err.message}`);
       await browser.close();
       return;
+    }
+
+    // After the dashboard stabilizes, navigate to Opportunities to ensure feed/search traffic fires
+    try {
+      await page.waitForTimeout(1500);
+      await page.goto(opportunitiesUrl, { waitUntil: "domcontentloaded", timeout: 60000 });
+      log(`✅ Loaded Opportunities page for ${region || "region"}`);
+    } catch (err) {
+      log(`⚠️ Secondary navigation failed (${opportunitiesUrl}): ${err.message}`);
     }
 
     // =======================================================
