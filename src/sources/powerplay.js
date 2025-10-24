@@ -7,6 +7,15 @@ import { Auth } from "../models/Auth.js";
 import { Opportunity } from "../models/Opportunity.js";
 import { claimOpportunity } from "../processors/claimOpportunity.js";
 
+// Optional multi-host API support (legacy + new backend)
+const DEFAULT_HOSTS = ["powerplay.generac.com", "dealerinsights.generac.com"];
+const API_HOSTS = (process.env.POWERPLAY_API_HOSTS || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+const HOSTS = API_HOSTS.length ? API_HOSTS : DEFAULT_HOSTS;
+const isTargetApi = (url) => HOSTS.some((h) => url.includes(h)) || url.includes("/powerplay3-server/");
+
 //
 // === Render / Playwright runtime fail-safes ===
 //
@@ -27,8 +36,51 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
         "--disable-software-rasterizer",
       ],
     });
-    const context = await browser.newContext();
+    // Prefer storageState if present; fall back to cookies
+    const baseName = path.basename(cookiePath || "cookies/unknown.json", ".json");
+    const dir = path.dirname(cookiePath || "cookies");
+    const storageStatePath = path.join(dir, `${baseName}.state.json`);
+    const tokenPath = path.join(dir, `${baseName}-token.txt`);
+
+    let context;
+    if (fs.existsSync(storageStatePath)) {
+      context = await browser.newContext({
+        storageState: storageStatePath,
+        userAgent:
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+      });
+      log(`🍪 ${region}: loaded storageState → ${storageStatePath}`);
+    } else {
+      context = await browser.newContext({
+        userAgent:
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+      });
+      const cookiesToAdd = cookiePath && fs.existsSync(cookiePath) ? JSON.parse(fs.readFileSync(cookiePath, "utf8")) : [];
+      if (cookiesToAdd.length) {
+        await context.addCookies(cookiesToAdd);
+        log(`🍪 ${region}: loaded cookies → ${cookiePath}`);
+      }
+    }
     const page = await context.newPage();
+
+    // Inject Authorization header for API hosts when missing
+    let injectedToken = null;
+    try {
+      injectedToken = fs.existsSync(tokenPath) ? (fs.readFileSync(tokenPath, "utf8").trim() || null) : null;
+      if (injectedToken) log(`🔑 ${region}: token file detected for request injection`);
+    } catch {}
+    if (injectedToken) {
+      await page.route("**/*", async (route) => {
+        const req = route.request();
+        const u = req.url();
+        if (isTargetApi(u)) {
+          const headers = { ...req.headers() };
+          if (!headers["authorization"]) headers["authorization"] = injectedToken;
+          return route.continue({ headers });
+        }
+        return route.continue();
+      });
+    }
 
     // --- Auto-validate cookies ---
     try {

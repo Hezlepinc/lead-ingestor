@@ -8,7 +8,10 @@
     "test": "node scripts/testPowerplay.js",
     "export:events": "node scripts/export-events.js",
     "health": "node scripts/health.mjs",
-    "api:map": "node scripts/mapPowerPlayAPI.mjs"
+    "api:map": "node scripts/mapPowerPlayAPI.mjs",
+    "cookies:save": "node scripts/cookieSaver.js",
+    "opps:fetch": "node scripts/fetch-opps-once.js",
+    "opps:test": "node scripts/test-opportunities.mjs"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.0",
