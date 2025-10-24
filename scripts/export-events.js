@@ -14,6 +14,7 @@ function parseArgs() {
   const sinceIdx = args.findIndex((a) => a === "--since"); // ISO date
   const untilIdx = args.findIndex((a) => a === "--until"); // ISO date
   const limitIdx = args.findIndex((a) => a === "--limit"); // number
+  const onlyOpp = args.includes("--only-opportunity") || args.includes("--opportunity-only");
 
   const now = new Date();
   const defaultFile = `exports/events-${now.toISOString().replace(/[:.]/g, "-")}.jsonl`;
@@ -26,25 +27,37 @@ function parseArgs() {
     since: sinceIdx !== -1 ? (args[sinceIdx + 1] || "") : "",
     until: untilIdx !== -1 ? (args[untilIdx + 1] || "") : "",
     limit: limitIdx !== -1 ? Number(args[limitIdx + 1] || "0") : 0,
+    onlyOpportunity: onlyOpp,
   };
 }
 
-function buildQuery({ type, region, since, until }) {
-  const query = {};
+function buildQuery({ type, region, since, until, onlyOpportunity }) {
+  const base = {};
   if (type) {
     const types = type.split(",").map((s) => s.trim()).filter(Boolean);
-    if (types.length) query.type = { $in: types };
+    if (types.length) base.type = { $in: types };
   }
   if (region) {
     const regions = region.split(",").map((s) => s.trim()).filter(Boolean);
-    if (regions.length) query.region = { $in: regions };
+    if (regions.length) base.region = { $in: regions };
   }
   if (since || until) {
-    query.timestamp = {};
-    if (since) query.timestamp.$gte = new Date(since);
-    if (until) query.timestamp.$lte = new Date(until);
+    base.timestamp = {};
+    if (since) base.timestamp.$gte = new Date(since);
+    if (until) base.timestamp.$lte = new Date(until);
   }
-  return query;
+  if (!onlyOpportunity) return base;
+
+  // Filter to Opportunity-related traffic
+  const opportunityUrlRegex = /\/api\/opportun/i; // matches opportunity/opportunities/search
+  const orConditions = [
+    { type: { $in: ["claim", "feed", "detail"] } },
+    { $and: [{ type: "response" }, { url: opportunityUrlRegex }] },
+    { $and: [{ type: "api" }, { url: opportunityUrlRegex }] },
+  ];
+
+  if (Object.keys(base).length === 0) return { $or: orConditions };
+  return { $and: [base, { $or: orConditions }] };
 }
 
 async function ensureDir(filePath) {
