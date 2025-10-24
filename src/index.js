@@ -27,7 +27,7 @@ import { log } from "./utils/logger.js";
   };
 
   // Split environment variables into arrays
-  const urls = (process.env.POWERPLAY_URLS || "")
+  const urls = (process.env.POWERPLAY_URLS || process.env.POWERPLAY_URL || "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
@@ -96,7 +96,7 @@ import { log } from "./utils/logger.js";
     const region = regionsForRun[i] || `Dealer ${i + 1}`;
 
     log(`🧭 Initializing monitor for ${region} using ${cookiePath}`);
-    log(`🕵️ Monitoring PowerPlay (${region}) → https://powerplay.generac.com/app/`);
+    log(`🕵️ Monitoring PowerPlay (${region}) → ${url}`);
     startPowerPlayMonitor({ onLead: handleLead, url, cookiePath, region });
 
     // Small delay between launches

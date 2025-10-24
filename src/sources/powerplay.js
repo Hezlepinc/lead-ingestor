@@ -97,9 +97,11 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
 
     // Navigate to dashboard where claims panel lives; also prepare opportunities URL
     const trimmed = baseUrl.replace(/\/+$/, "");
-    const appRoot = /\/app$/i.test(trimmed) ? trimmed : `${trimmed}/app`;
-    const dashboardUrl = `${appRoot}/`;
-    const opportunitiesUrl = `${appRoot}/opportunities`;
+    // If caller provides full API endpoint, do not append /app; otherwise keep legacy behavior
+    const isDirectApi = /\/powerplay3-server\/api\//i.test(trimmed);
+    const appRoot = isDirectApi ? trimmed : (/\/app$/i.test(trimmed) ? trimmed : `${trimmed}/app`);
+    const dashboardUrl = isDirectApi ? trimmed : `${appRoot}/`;
+    const opportunitiesUrl = isDirectApi ? trimmed : `${appRoot}/opportunities`;
     log(`🕵️ Monitoring PowerPlay (${region || "region unknown"}) → ${dashboardUrl}`);
 
     // Navigation moved below so that request/response listeners capture initial traffic
