@@ -131,21 +131,36 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
 
     // 4️⃣ Capture responses (optional debugging)
     page.on("response", async (res) => {
-      const url = res.url();
-      if (/\/api\//i.test(url)) {
-        const status = res.status();
-        const body = await res.text();
-        log(`📬 Response (${status}) from ${url}`);
-        if (onLead) {
-          await onLead({
-            type: "response",
-            region,
-            url,
-            status,
-            body,
-            timestamp: new Date(),
-          });
+      try {
+        const url = res.url();
+        if (/\/api\//i.test(url)) {
+          const status = res.status();
+          const headers = res.headers ? res.headers() : {};
+          const contentType = (headers["content-type"] || headers["Content-Type"] || "").toLowerCase();
+          let body = null;
+          if (contentType.includes("application/json")) {
+            try {
+              body = await res.text();
+            } catch (e) {
+              // Some responses cannot be retrieved; skip body but keep metadata
+              log(`⚠️ Skipping body read (${status}) ${url}: ${e.message}`);
+              body = null;
+            }
+          }
+          log(`📬 Response (${status}) from ${url}`);
+          if (onLead) {
+            await onLead({
+              type: "response",
+              region,
+              url,
+              status,
+              body,
+              timestamp: new Date(),
+            });
+          }
         }
+      } catch (err) {
+        log(`⚠️ Response handler error: ${err.message}`);
       }
     });
 
