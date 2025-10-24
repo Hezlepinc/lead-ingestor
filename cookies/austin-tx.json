@@ -1,1 +1,62 @@
-[]
+[
+  {
+    "name": "_ga",
+    "value": "GA1.1.188492184.1761327238",
+    "domain": ".generac.com",
+    "path": "/",
+    "expires": 1795887455.079654,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "did",
+    "value": "s%3Av0%3A8b1765b6-3e05-4bad-9f22-d6652add4eb0%3Aa9ecec0ce1d04d68fd9c56c948f84d4bc3cbc2c5f90986d7bb8c60d09abb4600.U3usljezTC30K592fnwBDxh6r4IeoPluDpXdMVaYEkE",
+    "domain": "id.generac.com",
+    "path": "/",
+    "expires": 1792885053.579188,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "did_compat",
+    "value": "s%3Av0%3A8b1765b6-3e05-4bad-9f22-d6652add4eb0%3Aa9ecec0ce1d04d68fd9c56c948f84d4bc3cbc2c5f90986d7bb8c60d09abb4600.U3usljezTC30K592fnwBDxh6r4IeoPluDpXdMVaYEkE",
+    "domain": "id.generac.com",
+    "path": "/",
+    "expires": 1792885053.579451,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "auth0",
+    "value": "s%3AS82TOw2pMb7zCNC73G5IVO6YUiV4ytsL.ITUBY0pjAoPGnVTUu9E8PziacS0DW%2Ba6KxUt8tAbVE4",
+    "domain": "id.generac.com",
+    "path": "/",
+    "expires": 1761586653.783644,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "auth0_compat",
+    "value": "s%3AS82TOw2pMb7zCNC73G5IVO6YUiV4ytsL.ITUBY0pjAoPGnVTUu9E8PziacS0DW%2Ba6KxUt8tAbVE4",
+    "domain": "id.generac.com",
+    "path": "/",
+    "expires": 1761586653.783812,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "_ga_8G5YPCGR90",
+    "value": "GS2.1.s1761327237$o1$g1$t1761327456$j58$l0$h0",
+    "domain": ".generac.com",
+    "path": "/",
+    "expires": 1795887456.53645,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  }
+]
