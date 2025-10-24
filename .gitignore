@@ -23,7 +23,14 @@ coverage/
 output/
 
 # Cookies / sessions
-cookies/
+# Ignore all cookie/session files by default...
+cookies/*
+# ...but explicitly include the five production dealer cookie JSONs
+!cookies/central-fl.json
+!cookies/jacksonville-fl.json
+!cookies/ft-myers-fl.json
+!cookies/austin-tx.json
+!cookies/dallas-tx.json
 
 # OS/editor
 .DS_Store
