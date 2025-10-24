@@ -197,6 +197,21 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
       const reqUrl = req.url();
       const method = req.method();
       const headersAll = (req.headers && req.headers()) || {};
+      // Capture live auth headers to persist tokens (covers cases where app stores tokens outside localStorage)
+      try {
+        const authHeader = headersAll["authorization"] || headersAll["Authorization"];
+        const xsrfHeader = headersAll["x-xsrf-token"] || headersAll["X-XSRF-TOKEN"];
+        if (authHeader || xsrfHeader) {
+          const jwtCandidate = authHeader && authHeader.replace(/^[Bb]earer\s+/, "");
+          const update = { updatedAt: new Date() };
+          if (jwtCandidate) update.jwt = jwtCandidate;
+          if (xsrfHeader) update.xsrf = xsrfHeader;
+          await Auth.updateOne({ region }, { $set: update }, { upsert: true });
+          if (jwtCandidate || xsrfHeader) {
+            log(`🔑 Tokens captured from request for ${region}${jwtCandidate ? " [jwt]" : ""}${xsrfHeader ? " [xsrf]" : ""}`);
+          }
+        }
+      } catch { /* ignore token capture errors */ }
       const headers = Object.fromEntries(
         Object.entries(headersAll).filter(([k]) =>
           !/^cookie$|^authorization$/i.test(k)
