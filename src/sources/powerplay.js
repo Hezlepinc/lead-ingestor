@@ -35,6 +35,7 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
     }
 
     const page = await context.newPage();
+    const autoClaimEnabled = process.env.AUTO_CLAIM === "true";
     const baseUrl = url || process.env.POWERPLAY_URLS?.split(",")[0];
     if (!baseUrl)
       throw new Error("POWERPLAY_URLS missing or empty in environment variables.");
@@ -139,6 +140,68 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
     });
 
     // 4️⃣ Capture responses (optional debugging)
+    function extractOpportunityIdsFromJson(jsonBody) {
+      const collected = new Set();
+      const visit = (node) => {
+        if (!node || typeof node !== "object") return;
+        if (Array.isArray(node)) {
+          for (const item of node) visit(item);
+          return;
+        }
+        const maybeId = node.opportunityId ?? node.opportunityID ?? node.id ?? node.ID;
+        if (typeof maybeId === "number" || (typeof maybeId === "string" && /^(\d+)$/.test(maybeId))) {
+          collected.add(String(maybeId));
+        }
+        for (const key of Object.keys(node)) visit(node[key]);
+      };
+      try { visit(jsonBody); } catch { /* ignore */ }
+      return Array.from(collected);
+    }
+
+    async function attemptAutoClaim(apiUrl, ids) {
+      if (!autoClaimEnabled || !ids.length) return;
+      try {
+        const idx = apiUrl.toLowerCase().indexOf("/api/");
+        if (idx === -1) return;
+        const apiRoot = apiUrl.slice(0, idx + 5); // include '/api/'
+        for (const id of ids) {
+          const candidates = [
+            `${apiRoot}Opportunity/${id}/Claim`,
+            `${apiRoot}opportunity/${id}/claim`,
+          ];
+          for (const claimUrl of candidates) {
+            try {
+              const resp = await page.request.post(claimUrl, {
+                headers: { "content-type": "application/json" },
+                data: {},
+              });
+              const status = resp.status();
+              let text = "";
+              try { text = await resp.text(); } catch { /* ignore */ }
+              log(`⚡ Auto-claim attempt (${region}) → ${claimUrl} → ${status}`);
+              if (onLead) {
+                await onLead({
+                  type: "claimAttempt",
+                  region,
+                  url: claimUrl,
+                  method: "POST",
+                  status,
+                  body: text,
+                  timestamp: new Date(),
+                });
+              }
+              // If success (2xx), stop trying more candidates for this id
+              if (status >= 200 && status < 300) break;
+            } catch (err) {
+              log(`⚠️ Auto-claim error (${region}) ${claimUrl}: ${err.message}`);
+            }
+          }
+        }
+      } catch (err) {
+        log(`⚠️ Auto-claim setup error (${region}): ${err.message}`);
+      }
+    }
+
     page.on("response", async (res) => {
       try {
         const url = res.url();
@@ -147,9 +210,11 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
           const headers = res.headers ? res.headers() : {};
           const contentType = (headers["content-type"] || headers["Content-Type"] || "").toLowerCase();
           let body = null;
+          let parsedJson = null;
           if (contentType.includes("application/json")) {
             try {
               body = await res.text();
+              try { parsedJson = JSON.parse(body); } catch { /* keep string */ }
             } catch (e) {
               // Some responses cannot be retrieved; skip body but keep metadata
               log(`⚠️ Skipping body read (${status}) ${url}: ${e.message}`);
@@ -166,6 +231,12 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
               body,
               timestamp: new Date(),
             });
+          }
+
+          // If this looks like an Opportunity feed/response and auto-claim is enabled, try to claim
+          if (autoClaimEnabled && /\/api\/opportun/i.test(url) && status >= 200 && status < 300 && parsedJson) {
+            const ids = extractOpportunityIdsFromJson(parsedJson);
+            if (ids.length) await attemptAutoClaim(url, ids);
           }
         }
       } catch (err) {
