@@ -28,6 +28,7 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
       ],
     });
     const context = await browser.newContext();
+    const page = await context.newPage();
 
     // --- Auto-validate cookies ---
     try {
@@ -60,8 +61,6 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
         }
       }
     });
-
-    const page = await context.newPage();
     const autoClaimEnabled = process.env.AUTO_CLAIM === "true";
     const baseUrl = url || process.env.POWERPLAY_URLS?.split(",")[0];
     if (!baseUrl)
