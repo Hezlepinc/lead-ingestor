@@ -66,6 +66,35 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
     if (!baseUrl)
       throw new Error("POWERPLAY_URLS missing or empty in environment variables.");
 
+    // Helper to extract and persist auth tokens (JWT/XSRF)
+    async function captureAndSaveTokens(tag) {
+      try {
+        const cookiesNow = await context.cookies();
+        const xsrf = cookiesNow.find((c) => c.name === "XSRF-TOKEN")?.value || null;
+        const jwt = await page.evaluate(() => {
+          try {
+            return (
+              window.localStorage.getItem("token") ||
+              window.localStorage.getItem("jwt") ||
+              null
+            );
+          } catch {
+            return null;
+          }
+        });
+        if (xsrf || jwt) {
+          await Auth.updateOne(
+            { region },
+            { $set: { xsrf: xsrf || null, jwt: jwt || null, updatedAt: new Date() } },
+            { upsert: true }
+          );
+          log(`🔑 Tokens saved for ${region}${tag ? ` (${tag})` : ""}`);
+        }
+      } catch (e) {
+        log(`⚠️ Token capture failed for ${region}: ${e.message}`);
+      }
+    }
+
     // Navigate to dashboard where claims panel lives; also prepare opportunities URL
     const trimmed = baseUrl.replace(/\/+$/, "");
     const appRoot = /\/app$/i.test(trimmed) ? trimmed : `${trimmed}/app`;
@@ -276,7 +305,7 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
             if (ids.length) await attemptAutoClaim(url, ids);
           }
 
-      // Persist opportunities and trigger claim for unseen ones
+      // Persist opportunities and trigger claim for unseen/unclaimed ones
       if (/\/api\/opportunity\/search/i.test(url) && parsedJson) {
         const items = Array.isArray(parsedJson?.data) ? parsedJson.data : (Array.isArray(parsedJson) ? parsedJson : []);
         if (items.length) {
@@ -287,9 +316,11 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
             const id = String(item.opportunityId || item.opportunityID || item.id || "");
             if (!id) continue;
             const exists = await Opportunity.findOne({ opportunityId: id }).lean();
+            const statusText = String(item.status || item.Status || item.state || "");
+            const isUnclaimed = /unclaimed|available|new/i.test(statusText) || statusText === "";
             if (!exists) {
               await Opportunity.create({ opportunityId: id, region, raw: item });
-              if (autoClaimEnabled) {
+              if (autoClaimEnabled && isUnclaimed) {
                 await claimOpportunity({ page, region, id, apiRoot, cookieHeader });
               }
             }
@@ -309,6 +340,7 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
         timeout: 60000,
       });
       log(`✅ Loaded Dashboard page for ${region || "region"}`);
+      await captureAndSaveTokens("dashboard");
     } catch (err) {
       log(`⚠️ Page navigation failed (${dashboardUrl}): ${err.message}`);
       await browser.close();
@@ -320,6 +352,7 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
       await page.waitForTimeout(1500);
       await page.goto(opportunitiesUrl, { waitUntil: "domcontentloaded", timeout: 60000 });
       log(`✅ Loaded Opportunities page for ${region || "region"}`);
+      await captureAndSaveTokens("opportunities");
     } catch (err) {
       log(`⚠️ Secondary navigation failed (${opportunitiesUrl}): ${err.message}`);
     }
