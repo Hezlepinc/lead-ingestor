@@ -32,30 +32,68 @@ import { log } from "./utils/logger.js";
     .map((s) => s.trim())
     .filter(Boolean);
 
-  // COOKIES_PATH can be a single directory; expand with region names to files inside
-  const cookiesRoot = (process.env.COOKIES_PATH || "").trim();
+  // COOKIES_PATH can be:
+  // - a comma-separated list of .json files
+  // - a single .json file
+  // - a directory that contains region-named .json files
+  const cookiesRaw = (process.env.COOKIES_PATH || "").trim();
 
   const regionNames = (process.env.REGIONS || "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
 
-  if (!urls.length || !cookiesRoot) {
+  if (!urls.length || !cookiesRaw) {
     log("❌ Missing POWERPLAY_URLS or COOKIES_PATH environment variables.");
     process.exit(1);
   }
 
-  // Build concrete cookie files from regions
-  const cookieFiles = regionNames.length
-    ? regionNames.map((r) => path.join(cookiesRoot, `${r}.json`))
-    : [cookiesRoot];
+  const slugify = (s) =>
+    s
+      .toLowerCase()
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+
+  let cookieFiles = [];
+  if (cookiesRaw.includes(",")) {
+    // explicit list of files
+    cookieFiles = cookiesRaw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  } else if (/\.json$/i.test(cookiesRaw)) {
+    // single file
+    cookieFiles = [cookiesRaw];
+  } else {
+    // directory + derive filenames from region names when available
+    if (regionNames.length) {
+      cookieFiles = regionNames.map((r) => path.join(cookiesRaw, `${slugify(r)}.json`));
+    } else {
+      // if no regions provided, assume raw path points to a directory and a single default file
+      cookieFiles = [cookiesRaw];
+    }
+  }
+
+  // Determine regions to use in logs; try to align lengths
+  let regionsForRun = [];
+  if (regionNames.length === cookieFiles.length) {
+    regionsForRun = regionNames;
+  } else if (regionNames.length && cookieFiles.length) {
+    regionsForRun = cookieFiles.map((_, i) => regionNames[i] || `Dealer ${i + 1}`);
+  } else if (cookieFiles.length) {
+    regionsForRun = cookieFiles.map((f, i) => {
+      const base = path.basename(f, ".json");
+      return base || `Dealer ${i + 1}`;
+    });
+  }
 
   log(`🚀 Starting monitors for ${cookieFiles.length} dealer accounts...`);
 
   for (let i = 0; i < cookieFiles.length; i++) {
     const url = urls[i] || urls[0]; // fallback to first URL if fewer URLs
     const cookiePath = cookieFiles[i];
-    const region = regionNames[i] || `Dealer ${i + 1}`;
+    const region = regionsForRun[i] || `Dealer ${i + 1}`;
 
     log(`🧭 Initializing monitor for ${region} using ${cookiePath}`);
     startPowerPlayMonitor({ onLead: handleLead, url, cookiePath, region });
