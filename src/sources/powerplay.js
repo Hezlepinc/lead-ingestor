@@ -164,6 +164,10 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
         const idx = apiUrl.toLowerCase().indexOf("/api/");
         if (idx === -1) return;
         const apiRoot = apiUrl.slice(0, idx + 5); // include '/api/'
+        // Build Cookie header from current browser context to carry auth/session
+        const cookieHeader = (await context.cookies())
+          .map((c) => `${c.name}=${c.value}`)
+          .join("; ");
         for (const id of ids) {
           const candidates = [
             `${apiRoot}Opportunity/${id}/Claim`,
@@ -172,7 +176,12 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
           for (const claimUrl of candidates) {
             try {
               const resp = await page.request.post(claimUrl, {
-                headers: { "content-type": "application/json" },
+                headers: {
+                  "content-type": "application/json",
+                  "accept": "application/json, text/plain, */*",
+                  "referer": dashboardUrl,
+                  ...(cookieHeader ? { cookie: cookieHeader } : {}),
+                },
                 data: {},
               });
               const status = resp.status();
