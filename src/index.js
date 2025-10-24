@@ -1,18 +1,47 @@
 import "dotenv/config";
+import path from "path";
+import fs from "fs";
 import { connectDB } from "./config/db.js";
 import { Lead } from "./models/Lead.js";
-import { startPowerPlayMonitor } from "./sources/powerplay.js";
 import { Event } from "./models/Event.js";
-import path from "path";
+import { startPowerPlayMonitor } from "./sources/powerplay.js";
 import { log } from "./utils/logger.js";
 
 (async () => {
+  // --- Resolve absolute working directory for Render ---
+  const __dirname = path.resolve();
+
+  // --- Normalize critical env vars with defaults ---
+  const COOKIES_PATH =
+    process.env.COOKIES_PATH && !path.isAbsolute(process.env.COOKIES_PATH)
+      ? path.join(__dirname, process.env.COOKIES_PATH)
+      : process.env.COOKIES_PATH || path.join(__dirname, "cookies");
+
+  const POWERPLAY_URLS = (process.env.POWERPLAY_URLS || process.env.POWERPLAY_URL || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const REGION_NAMES = (process.env.REGIONS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  // --- Log where we’re looking for cookies ---
+  log(`🍪 Cookies path resolved to: ${COOKIES_PATH}`);
+  if (!fs.existsSync(COOKIES_PATH)) {
+    log(`⚠️ Cookies path missing: ${COOKIES_PATH}`);
+  }
+
+  // --- Connect to Mongo ---
   await connectDB();
 
+  // --- Lead handler logic ---
   const handleLead = async (data) => {
     try {
-      // Decide whether to persist as Lead (user/contact) or Event (network capture)
-      const isLikelyLead = Boolean(data?.email || data?.phone || data?.name || data?.payload?.customerEmail);
+      const isLikelyLead = Boolean(
+        data?.email || data?.phone || data?.name || data?.payload?.customerEmail
+      );
 
       if (isLikelyLead) {
         await Lead.create(data);
@@ -26,80 +55,51 @@ import { log } from "./utils/logger.js";
     }
   };
 
-  // Split environment variables into arrays
-  const urls = (process.env.POWERPLAY_URLS || process.env.POWERPLAY_URL || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-
-  // COOKIES_PATH can be:
-  // - a comma-separated list of .json files
-  // - a single .json file
-  // - a directory that contains region-named .json files
-  const cookiesRaw = (process.env.COOKIES_PATH || "").trim();
-
-  const regionNames = (process.env.REGIONS || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-
-  if (!urls.length || !cookiesRaw) {
-    log("❌ Missing POWERPLAY_URLS or COOKIES_PATH environment variables.");
-    process.exit(1);
-  }
-
+  // --- Determine cookie files ---
   const slugify = (s) =>
-    s
-      .toLowerCase()
-      .replace(/&/g, "and")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+    s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
   let cookieFiles = [];
-  if (cookiesRaw.includes(",")) {
-    // explicit list of files
-    cookieFiles = cookiesRaw
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-  } else if (/\.json$/i.test(cookiesRaw)) {
-    // single file
-    cookieFiles = [cookiesRaw];
+  if (COOKIES_PATH.includes(",")) {
+    cookieFiles = COOKIES_PATH.split(",").map((s) => s.trim()).filter(Boolean);
+  } else if (/\.json$/i.test(COOKIES_PATH)) {
+    cookieFiles = [COOKIES_PATH];
+  } else if (REGION_NAMES.length) {
+    cookieFiles = REGION_NAMES.map((r) => path.join(COOKIES_PATH, `${slugify(r)}.json`));
   } else {
-    // directory + derive filenames from region names when available
-    if (regionNames.length) {
-      cookieFiles = regionNames.map((r) => path.join(cookiesRaw, `${slugify(r)}.json`));
-    } else {
-      // if no regions provided, assume raw path points to a directory and a single default file
-      cookieFiles = [cookiesRaw];
-    }
+    cookieFiles = [COOKIES_PATH];
   }
 
-  // Determine regions to use in logs; try to align lengths
+  // --- Determine regions to display in logs ---
   let regionsForRun = [];
-  if (regionNames.length === cookieFiles.length) {
-    regionsForRun = regionNames;
-  } else if (regionNames.length && cookieFiles.length) {
-    regionsForRun = cookieFiles.map((_, i) => regionNames[i] || `Dealer ${i + 1}`);
-  } else if (cookieFiles.length) {
-    regionsForRun = cookieFiles.map((f, i) => {
-      const base = path.basename(f, ".json");
-      return base || `Dealer ${i + 1}`;
-    });
+  if (REGION_NAMES.length === cookieFiles.length) {
+    regionsForRun = REGION_NAMES;
+  } else if (REGION_NAMES.length && cookieFiles.length) {
+    regionsForRun = cookieFiles.map((_, i) => REGION_NAMES[i] || `Dealer ${i + 1}`);
+  } else {
+    regionsForRun = cookieFiles.map((f, i) => path.basename(f, ".json") || `Dealer ${i + 1}`);
   }
 
+  // --- Startup Summary ---
   log(`🚀 Starting monitors for ${cookieFiles.length} dealer accounts...`);
 
+  // --- Launch watchers sequentially ---
   for (let i = 0; i < cookieFiles.length; i++) {
-    const url = urls[i] || urls[0]; // fallback to first URL if fewer URLs
+    const url = POWERPLAY_URLS[i] || POWERPLAY_URLS[0];
     const cookiePath = cookieFiles[i];
     const region = regionsForRun[i] || `Dealer ${i + 1}`;
 
+    // --- Check cookie file existence before launching ---
+    if (!fs.existsSync(cookiePath)) {
+      log(`⚠️ Missing cookie file for ${region}: ${cookiePath}`);
+      continue;
+    }
+
     log(`🧭 Initializing monitor for ${region} using ${cookiePath}`);
     log(`🕵️ Monitoring PowerPlay (${region}) → ${url}`);
+
     startPowerPlayMonitor({ onLead: handleLead, url, cookiePath, region });
 
-    // Small delay between launches
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 1000)); // small stagger
   }
 })();
