@@ -406,6 +406,20 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
       log(`⚠️ Secondary navigation failed (${opportunitiesUrl}): ${err.message}`);
     }
 
+    // Optional periodic refresh to tighten detection cycle (if the webapp does not self-poll fast enough)
+    const pollIntervalMs = Number(process.env.POLL_INTERVAL_MS || "0");
+    if (pollIntervalMs > 0) {
+      log(`⏱️ Polling enabled for ${region} every ${pollIntervalMs} ms`);
+      setInterval(async () => {
+        try {
+          await page.reload({ waitUntil: "domcontentloaded", timeout: 60000 });
+          log(`🔄 Refreshed Opportunities page for ${region || "region"}`);
+        } catch (e) {
+          log(`⚠️ Periodic refresh failed (${region || "region"}): ${e.message}`);
+        }
+      }, pollIntervalMs);
+    }
+
     // =======================================================
     // === TEST MODE (optional local verification) ===========
     // =======================================================
