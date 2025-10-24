@@ -39,8 +39,9 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
     if (!baseUrl)
       throw new Error("POWERPLAY_URLS missing or empty in environment variables.");
 
-    const opportunitiesUrl = `${baseUrl.replace(/\/$/, "")}/opportunities`;
-    log(`🕵️ Monitoring PowerPlay (${region || "region unknown"}) → ${opportunitiesUrl}`);
+    // Navigate to dashboard where claims panel lives
+    const dashboardUrl = `${baseUrl.replace(/\/$/, "")}/app/`;
+    log(`🕵️ Monitoring PowerPlay (${region || "region unknown"}) → ${dashboardUrl}`);
 
     // Navigation moved below so that request/response listeners capture initial traffic
 
@@ -51,35 +52,7 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
       const reqUrl = req.url();
       const method = req.method();
 
-      // 1️⃣ Opportunity Feed (new / search)
-      if (/\/api\/opportunit(y|ies|y\/search)/i.test(reqUrl)) {
-        const data = req.postData() || null;
-        log(`📥 Feed detected (${region}): ${reqUrl}`);
-        if (onLead) {
-          await onLead({
-            type: "feed",
-            region,
-            url: reqUrl,
-            payload: data,
-            timestamp: new Date(),
-          });
-        }
-      }
-
-      // 2️⃣ Opportunity Detail (when viewing one)
-      if (/\/api\/opportunity\/\d+$/i.test(reqUrl) && method === "GET") {
-        log(`📄 Detail request detected (${region}): ${reqUrl}`);
-        if (onLead) {
-          await onLead({
-            type: "detail",
-            region,
-            url: reqUrl,
-            timestamp: new Date(),
-          });
-        }
-      }
-
-      // 3️⃣ Claim request (actual claim or accept)
+      // 1️⃣ Claim request (actual claim or accept)
       if (/\/api\/opportunity\/\d+\/claim/i.test(reqUrl) && method === "POST") {
         const rawData = req.postData();
         let data;
@@ -107,13 +80,58 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
         } catch (err) {
           log(`❌ Error handling claim for ${region}: ${err.message}`);
         }
+        return;
+      }
+
+      // 2️⃣ Opportunity Feed (new / search)
+      if (/\/api\/opportunit(y|ies|y\/search)/i.test(reqUrl)) {
+        const data = req.postData() || null;
+        log(`📥 Feed detected (${region}): ${reqUrl}`);
+        if (onLead) {
+          await onLead({
+            type: "feed",
+            region,
+            url: reqUrl,
+            payload: data,
+            timestamp: new Date(),
+          });
+        }
+      }
+
+      // 3️⃣ Opportunity Detail (when viewing one)
+      if (/\/api\/opportunity\/\d+$/i.test(reqUrl) && method === "GET") {
+        log(`📄 Detail request detected (${region}): ${reqUrl}`);
+        if (onLead) {
+          await onLead({
+            type: "detail",
+            region,
+            url: reqUrl,
+            timestamp: new Date(),
+          });
+        }
+      }
+
+      // 4️⃣ Generic API traffic capture (dashboard widgets, etc.)
+      if (/\/api\//i.test(reqUrl)) {
+        const data = req.postData && req.postData();
+        log(`🧲 API detected (${region}): ${method} ${reqUrl}`);
+        if (onLead) {
+          await onLead({
+            type: "api",
+            region,
+            url: reqUrl,
+            method,
+            payload: data || null,
+            timestamp: new Date(),
+          });
+        }
       }
     });
 
     // 4️⃣ Capture responses (optional debugging)
     page.on("response", async (res) => {
       const url = res.url();
-      if (/\/api\/opportunit/i.test(url)) {
+      if (/\/api\//i.test(url)) {
         const status = res.status();
         const body = await res.text();
         log(`📬 Response (${status}) from ${url}`);
@@ -132,13 +150,13 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
 
     // === Navigate after listeners are attached ===
     try {
-      await page.goto(opportunitiesUrl, {
+      await page.goto(dashboardUrl, {
         waitUntil: "domcontentloaded",
         timeout: 60000,
       });
       log(`✅ Loaded Opportunities page for ${region || "region"}`);
     } catch (err) {
-      log(`⚠️ Page navigation failed (${opportunitiesUrl}): ${err.message}`);
+      log(`⚠️ Page navigation failed (${dashboardUrl}): ${err.message}`);
       await browser.close();
       return;
     }
