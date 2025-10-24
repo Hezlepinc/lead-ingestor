@@ -42,18 +42,7 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
     const opportunitiesUrl = `${baseUrl.replace(/\/$/, "")}/opportunities`;
     log(`🕵️ Monitoring PowerPlay (${region || "region unknown"}) → ${opportunitiesUrl}`);
 
-    // === Defensive navigation ===
-    try {
-      await page.goto(opportunitiesUrl, {
-        waitUntil: "domcontentloaded",
-        timeout: 60000,
-      });
-      log(`✅ Loaded Opportunities page for ${region || "region"}`);
-    } catch (err) {
-      log(`⚠️ Page navigation failed (${opportunitiesUrl}): ${err.message}`);
-      await browser.close();
-      return;
-    }
+    // Navigation moved below so that request/response listeners capture initial traffic
 
     // =======================================================
     // === Watch for PowerPlay network traffic (main APIs) ===
@@ -140,6 +129,19 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
         }
       }
     });
+
+    // === Navigate after listeners are attached ===
+    try {
+      await page.goto(opportunitiesUrl, {
+        waitUntil: "domcontentloaded",
+        timeout: 60000,
+      });
+      log(`✅ Loaded Opportunities page for ${region || "region"}`);
+    } catch (err) {
+      log(`⚠️ Page navigation failed (${opportunitiesUrl}): ${err.message}`);
+      await browser.close();
+      return;
+    }
 
     // =======================================================
     // === TEST MODE (optional local verification) ===========
