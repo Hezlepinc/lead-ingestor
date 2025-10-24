@@ -4,13 +4,14 @@ services:
     runtime: node
     plan: starter # keeps it awake 24/7
     buildCommand: |
+      npm install
       npx playwright install --with-deps chromium
     startCommand: npm start
     envVars:
       - key: NODE_VERSION
         value: 20
       - key: MONGO_URI
-        sync: false # set in dashboard or Render Secrets
+        sync: false # set in Render dashboard
       - key: SENDGRID_API_KEY
         sync: false
       - key: SENDER_EMAIL
