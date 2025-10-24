@@ -299,13 +299,62 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
             });
           }
 
+          // Special handling for OpportunitySummary feeds to trigger fast claim on unclaimed (E0004)
+          try {
+            const lowerUrl = url.toLowerCase();
+            const isSummarySearch = lowerUrl.includes("/api/opportunitysummary/getbydealerid/search");
+            const isSummaryPending = lowerUrl.includes("/api/opportunitysummary/pending/dealer");
+            if ((isSummarySearch || isSummaryPending) && parsedJson) {
+              const items = Array.isArray(parsedJson?.pagedResults)
+                ? parsedJson.pagedResults
+                : (Array.isArray(parsedJson?.data) ? parsedJson.data : (Array.isArray(parsedJson) ? parsedJson : []));
+
+              if (items.length) {
+                // Compute API root and cookies once
+                const idx = url.toLowerCase().indexOf("/api/");
+                const apiRoot = idx !== -1 ? url.slice(0, idx + 5) : `${baseUrl.replace(/\/$/, "")}/powerplay3-server/api/`;
+                const cookieHeader = (await context.cookies()).map((c) => `${c.name}=${c.value}`).join("; ");
+
+                for (const opp of items) {
+                  const oppId = String(opp.opportunityId || opp.opportunityID || opp.id || "");
+                  const statusText = String(opp.status || opp.Status || opp.state || "");
+                  if (!oppId) continue;
+
+                  // Persist opportunity document if unseen
+                  try {
+                    const exists = await Opportunity.findOne({ opportunityId: oppId }).lean();
+                    if (!exists) {
+                      await Opportunity.create({ opportunityId: oppId, region, raw: opp });
+                    }
+                  } catch { /* ignore persistence errors here */ }
+
+                  if (statusText === "E0004") {
+                    log(`🧲 New unclaimed opportunity detected (${region}): ${oppId}${opp.customerFirstName ? ` for ${opp.customerFirstName} ${opp.customerLastName || ""}` : ""}`);
+                    if (autoClaimEnabled) {
+                      try {
+                        await claimOpportunity({ page, region, id: oppId, apiRoot, cookieHeader });
+                      } catch (err) {
+                        log(`⚠️ Auto-claim error (${region}) ${oppId}: ${err.message}`);
+                      }
+                    }
+                  }
+                }
+              }
+
+              // We handled claim attempts from this response; skip generic auto-claim below
+              return;
+            }
+          } catch (e) {
+            log(`⚠️ OpportunitySummary handler error (${region}): ${e.message}`);
+          }
+
           // If this looks like an Opportunity feed/response and auto-claim is enabled, try to claim
           if (autoClaimEnabled && /\/api\/opportun/i.test(url) && status >= 200 && status < 300 && parsedJson) {
             const ids = extractOpportunityIdsFromJson(parsedJson);
             if (ids.length) await attemptAutoClaim(url, ids);
           }
 
-      // Persist opportunities and trigger claim for unseen/unclaimed ones
+      // Persist opportunities and trigger claim for unseen/unclaimed ones (legacy search endpoint)
       if (/\/api\/opportunity\/search/i.test(url) && parsedJson) {
         const items = Array.isArray(parsedJson?.data) ? parsedJson.data : (Array.isArray(parsedJson) ? parsedJson : []);
         if (items.length) {

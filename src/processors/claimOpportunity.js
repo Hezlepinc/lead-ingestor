@@ -9,7 +9,11 @@ export async function claimOpportunity({ page, region, id, apiRoot, cookieHeader
       log(`⚠️ No auth tokens for ${region}`);
     }
 
-    const claimUrl = `${apiRoot.replace(/\/$/, "")}/opportunity/${id}/claim`;
+    const base = apiRoot.replace(/\/$/, "");
+    const candidates = [
+      `${base}/Opportunity/${id}/Claim`, // Canonical capitalized path
+      `${base}/opportunity/${id}/claim`, // Lowercase fallback
+    ];
     const headers = {
       "content-type": "application/json",
       accept: "application/json, text/plain, */*",
@@ -19,14 +23,23 @@ export async function claimOpportunity({ page, region, id, apiRoot, cookieHeader
       ...(auth?.xsrf ? { "x-xsrf-token": auth.xsrf } : {}),
     };
 
-    const res = await page.request.post(claimUrl, { headers, data: {} });
-    const status = res.status();
-    let body = "";
-    try { body = await res.text(); } catch { /* ignore */ }
-
-    log(`🚀 ${region}: claim ${id} → ${status}`);
-    await Claim.create({ region, opportunityId: String(id), status, responseBody: body });
-    return { status, body };
+    const started = Date.now();
+    let lastError = null;
+    for (const claimUrl of candidates) {
+      try {
+        const res = await page.request.post(claimUrl, { headers, data: {} });
+        const status = res.status();
+        let body = "";
+        try { body = await res.text(); } catch { /* ignore */ }
+        const ms = Date.now() - started;
+        log(`⚡ ${region}: claim ${id} → ${status} (${ms} ms)`);
+        await Claim.create({ region, opportunityId: String(id), status, responseBody: body });
+        return { status, body };
+      } catch (err) {
+        lastError = err;
+      }
+    }
+    throw lastError || new Error("All claim attempts failed");
   } catch (err) {
     log(`❌ ${region}: claim ${id} failed ${err.message}`);
     return { error: err };
