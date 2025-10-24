@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: lead-ingestor
+    runtime: node
+    plan: starter # keeps it awake 24/7
+    buildCommand: |
+      npx playwright install --with-deps chromium
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: MONGO_URI
+        sync: false # set in dashboard or Render Secrets
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: SENDER_EMAIL
+        sync: false
+      - key: OFFICE_EMAIL
+        sync: false
+      - key: POWERPLAY_URLS
+        sync: false
+      - key: COOKIES_PATH
+        sync: false
+      - key: SCHEDULER_LINK
+        sync: false
