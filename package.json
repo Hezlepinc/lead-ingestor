@@ -13,7 +13,8 @@
     "cookies:save": "node scripts/cookieSaver.js",
     "opps:fetch": "node scripts/fetch-opps-once.js",
     "opps:test": "node scripts/test-opportunities.mjs",
-    "dev:pp": "node --enable-source-maps scripts/dev-powerplay.js"
+    "dev:pp": "node --enable-source-maps scripts/dev-powerplay.js",
+    "probe:pp": "node scripts/probe-powerplay.js"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.0",
