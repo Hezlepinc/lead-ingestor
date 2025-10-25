@@ -1,0 +1,75 @@
+{
+  "cookies": [
+    {
+      "name": "_ga",
+      "value": "GA1.1.940264890.1761349747",
+      "domain": ".generac.com",
+      "path": "/",
+      "expires": 1795909812.610343,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "did",
+      "value": "s%3Av0%3Ae3cefb28-bde8-4441-936e-0c2fc38c12cd%3Ae8538d75700e27cca34aae5632b6274e6dded24b469d10cc1973de3934a988ce.w%2F9vVkJBMH8HMtkfgBExVdXHJ2n%2Fd48apGtHW0bpowI",
+      "domain": "id.generac.com",
+      "path": "/",
+      "expires": 1792907374.883093,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "did_compat",
+      "value": "s%3Av0%3Ae3cefb28-bde8-4441-936e-0c2fc38c12cd%3Ae8538d75700e27cca34aae5632b6274e6dded24b469d10cc1973de3934a988ce.w%2F9vVkJBMH8HMtkfgBExVdXHJ2n%2Fd48apGtHW0bpowI",
+      "domain": "id.generac.com",
+      "path": "/",
+      "expires": 1792907374.883345,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "auth0",
+      "value": "s%3AwZWce3-LOPs8wi1nHVkQ6cfmp5osTxCe.jsBnYyqnMEdJg4pKZaZCXa8yyCYBEaRXwPv6Qos4meo",
+      "domain": "id.generac.com",
+      "path": "/",
+      "expires": 1761608975.13805,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "auth0_compat",
+      "value": "s%3AwZWce3-LOPs8wi1nHVkQ6cfmp5osTxCe.jsBnYyqnMEdJg4pKZaZCXa8yyCYBEaRXwPv6Qos4meo",
+      "domain": "id.generac.com",
+      "path": "/",
+      "expires": 1761608975.138253,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_8G5YPCGR90",
+      "value": "GS2.1.s1761349746$o1$g1$t1761349820$j50$l0$h0",
+      "domain": ".generac.com",
+      "path": "/",
+      "expires": 1795909820.054029,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://powerplay.generac.com",
+      "localStorage": [
+        {
+          "name": "LOGGED_IN",
+          "value": "true"
+        }
+      ]
+    }
+  ]
+}

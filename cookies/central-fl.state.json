@@ -1,0 +1,75 @@
+{
+  "cookies": [
+    {
+      "name": "_ga",
+      "value": "GA1.1.705339818.1761348906",
+      "domain": ".generac.com",
+      "path": "/",
+      "expires": 1795909905.056024,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "did",
+      "value": "s%3Av0%3A50375dfe-8291-4e3d-953c-71e23e93f8be%3A969e41e76976f682b3ea9c0fed4a995f3e79ab60f517950e64898f8af0518ac9.DXY%2F%2BgwbQWvgm0AN%2BuD8dILJ1xaX6TNZCzWhRFHB2ww",
+      "domain": "id.generac.com",
+      "path": "/",
+      "expires": 1792906519.549461,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "did_compat",
+      "value": "s%3Av0%3A50375dfe-8291-4e3d-953c-71e23e93f8be%3A969e41e76976f682b3ea9c0fed4a995f3e79ab60f517950e64898f8af0518ac9.DXY%2F%2BgwbQWvgm0AN%2BuD8dILJ1xaX6TNZCzWhRFHB2ww",
+      "domain": "id.generac.com",
+      "path": "/",
+      "expires": 1792906519.549728,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "auth0",
+      "value": "s%3A7UMoI2Z2wWlf-EODD00MQfhKPgC47566.n7O0RR8SipA00shdCldsUTSje2ERoywOdOYgiJIcXTw",
+      "domain": "id.generac.com",
+      "path": "/",
+      "expires": 1761609068.679959,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "auth0_compat",
+      "value": "s%3A7UMoI2Z2wWlf-EODD00MQfhKPgC47566.n7O0RR8SipA00shdCldsUTSje2ERoywOdOYgiJIcXTw",
+      "domain": "id.generac.com",
+      "path": "/",
+      "expires": 1761609068.68013,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_8G5YPCGR90",
+      "value": "GS2.1.s1761348906$o1$g1$t1761349906$j22$l0$h0",
+      "domain": ".generac.com",
+      "path": "/",
+      "expires": 1795909906.553819,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://powerplay.generac.com",
+      "localStorage": [
+        {
+          "name": "LOGGED_IN",
+          "value": "true"
+        }
+      ]
+    }
+  ]
+}
