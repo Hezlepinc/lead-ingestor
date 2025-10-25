@@ -4,13 +4,14 @@ import fs from "fs";
 import { connectDB } from "./config/db.js";
 import { Lead } from "./models/Lead.js";
 import { Event } from "./models/Event.js";
+import { Opportunity } from "./models/Opportunity.js";
 import { startPowerPlayMonitor } from "./sources/powerplay.js";
 import { log } from "./utils/logger.js";
 
 (async () => {
   const __dirname = path.resolve();
 
-  // --- Normalize critical env vars ---
+  // --- Normalize env vars ---
   const COOKIES_PATH =
     process.env.COOKIES_PATH && !path.isAbsolute(process.env.COOKIES_PATH)
       ? path.join(__dirname, process.env.COOKIES_PATH)
@@ -33,9 +34,53 @@ import { log } from "./utils/logger.js";
   // --- Connect Mongo ---
   await connectDB();
 
-  // --- Lead handler logic ---
+  // ============================================================
+  // === Unified Lead Handler with Opportunity Deduplication ====
+  // ============================================================
   const handleLead = async (data) => {
     try {
+      // 1️⃣ Handle PowerPlay opportunities separately
+      if (data?.type === "opportunity") {
+        const id = data.id || data.Id || data.opportunityId;
+        if (!id) {
+          log(`⚠️ Skipping opportunity with no ID (${data.region || "unknown region"})`);
+          return;
+        }
+
+        // Check if this opportunity already exists
+        const existing = await Opportunity.findOne({ powerplayId: id });
+
+        if (existing) {
+          // Already seen before — update metadata but don't reinsert
+          await Opportunity.updateOne(
+            { powerplayId: id },
+            {
+              $set: {
+                raw: data,
+                lastSeen: new Date(),
+                region: data.region || existing.region,
+                source: data.source || existing.source,
+              },
+            }
+          );
+          log(`🔁 Updated existing opportunity ${id} (${data.region})`);
+          return;
+        }
+
+        // Otherwise, create a brand-new record
+        await Opportunity.create({
+          raw: data,
+          region: data.region,
+          source: data.source || "powerplay",
+          powerplayId: id,
+          lastSeen: new Date(),
+        });
+
+        log(`💾 New opportunity saved → ${id} (${data.region})`);
+        return;
+      }
+
+      // 2️⃣ Handle normal Leads (non-opportunity payloads)
       const isLikelyLead = Boolean(
         data?.email || data?.phone || data?.name || data?.payload?.customerEmail
       );
@@ -88,9 +133,10 @@ import { log } from "./utils/logger.js";
     );
   }
 
+  // --- Startup summary ---
   log(`🚀 Starting monitors for ${cookieFiles.length} dealer accounts...`);
 
-  // --- Small helper: check for missing or invalid tokens ---
+  // --- Helper: Validate token before launching region ---
   const validateToken = (cookiePath, region) => {
     const base = path.basename(cookiePath, ".json");
     const dir = path.dirname(cookiePath);
@@ -113,17 +159,16 @@ import { log } from "./utils/logger.js";
     const cookiePath = cookieFiles[i];
     const region = regionsForRun[i] || `Dealer ${i + 1}`;
 
-    // --- Verify files exist ---
+    // --- Verify cookie exists ---
     if (!fs.existsSync(cookiePath)) {
       log(`⚠️ Missing cookie file for ${region}: ${cookiePath}`);
       continue;
     }
 
-    // --- Verify token before starting ---
+    // --- Verify token ---
     const hasToken = validateToken(cookiePath, region);
     if (!hasToken) {
-      log(`⏸️ Skipping ${region} until valid token exists. Will retry later.`);
-      // Optional delay so logs aren’t flooded
+      log(`⏸️ Skipping ${region} until valid token exists. Retrying in 60 seconds...`);
       await new Promise((r) => setTimeout(r, 60_000));
       continue;
     }
@@ -138,7 +183,7 @@ import { log } from "./utils/logger.js";
       log(`❌ Failed to start monitor for ${region}: ${err.message}`);
     }
 
-    // Small stagger to avoid concurrent browser boots
+    // --- Small stagger between launches ---
     await new Promise((r) => setTimeout(r, 1000));
   }
 })();
