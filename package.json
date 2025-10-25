@@ -7,6 +7,7 @@
     "start": "node src/index.js",
     "test": "node scripts/testPowerplay.js",
     "export:events": "node scripts/export-events.js",
+    "export:mongo": "node scripts/exportEvents.js",
     "health": "node scripts/health.mjs",
     "api:map": "node scripts/mapPowerPlayAPI.mjs",
     "cookies:save": "node scripts/cookieSaver.js",
