@@ -2,6 +2,7 @@ import { chromium } from "playwright";
 import fs from "fs";
 import path from "path";
 import { log } from "../utils/logger.js";
+import { claimOpportunity } from "../powerplay/claimOpportunity.js";
 import { sendCustomerEmail, sendOfficeEmail } from "../utils/emailer.js";
 import { Auth } from "../models/Auth.js";
 import { Opportunity } from "../models/Opportunity.js";
@@ -18,53 +19,7 @@ function isTargetApi(url) {
   return DEFAULT_HOSTS.some((h) => url.includes(h)) || url.includes("/powerplay3-server/");
 }
 
-//
-// === Helper: perform claim ===
-//
-async function claimOpportunity({ page, region, id, apiRoot, cookieHeader }) {
-  try {
-    const claimUrls = [
-      `${apiRoot}OpportunitySummary/Claim/${id}`, // legacy
-      `${apiRoot}Opportunity/ClaimDealer/${id}`,  // new style
-      `${apiRoot}Opportunity/DealerClaim/${id}`,  // alternate
-    ];
-
-    for (const claimUrl of claimUrls) {
-      log(`🚨 Attempting claim for ${region} → ${claimUrl}`);
-      const res = await page.request.post(claimUrl, {
-        headers: {
-          Cookie: cookieHeader,
-          "Content-Type": "application/json",
-          Accept: "application/json, text/plain, */*",
-        },
-        timeout: 20000,
-      });
-
-      const status = res.status();
-      const text = await res.text();
-      await Opportunity.create({
-        opportunityId: id,
-        region,
-        status,
-        responseBody: text?.slice(0, 500) || "",
-        createdAt: new Date(),
-      });
-
-      if (status >= 200 && status < 300) {
-        log(`✅ ${region}: successfully claimed opportunity ${id}`);
-        return true;
-      }
-
-      // retry only if 404 (endpoint mismatch)
-      if (status !== 404) break;
-    }
-
-    log(`⚠️ ${region}: all claim attempts failed for ${id}`);
-    return false;
-  } catch (err) {
-    log(`❌ ${region}: claimOpportunity error for ${id} → ${err.message}`);
-  }
-}
+// claimOpportunity is now imported from ../powerplay/claimOpportunity.js
 
 //
 // === Core Monitor ===
@@ -129,7 +84,7 @@ export async function startPowerPlayMonitor({ region, url, cookiePath }) {
     const { id, apiRoot, cookieHeader } = claimQueue.shift();
     activeClaims++;
     try {
-      await claimOpportunity({ page, region, id, apiRoot, cookieHeader });
+      await claimOpportunity({ page, region, id, apiRoot, cookieHeader, cookiePath });
     } catch (e) {
       log(`⚠️ ${region}: claim ${id} failed ${e.message}`);
     } finally {
