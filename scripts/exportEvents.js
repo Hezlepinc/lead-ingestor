@@ -5,7 +5,7 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 
-const MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/powerplay";
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/powerplay";
 const HOURS = 6;
 const cutoff = new Date(Date.now() - HOURS * 60 * 60 * 1000);
 

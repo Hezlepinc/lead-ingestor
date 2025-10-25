@@ -95,24 +95,40 @@ export async function startPowerPlayMonitor({ region, url, cookiePath }) {
 
   // === handle incoming leads ===
   async function handleOpportunityItems(items, apiRoot) {
-    if (!Array.isArray(items)) return;
+    if (!Array.isArray(items) || items.length === 0) return;
+
     const cookieHeader = (await context.cookies())
       .map((c) => `${c.name}=${c.value}`)
       .join("; ");
 
-    for (const item of items) {
-      const id = String(item.opportunityId || item.id || "");
-      if (!id) continue;
-      const exists = await Opportunity.findOne({ opportunityId: id }).lean();
-      const statusText = String(item.status || item.Status || item.state || "");
-      const isUnclaimed =
-        /E0004|unclaimed|available|new/i.test(statusText) || !statusText;
+    await Promise.all(
+      items.map(async (item) => {
+        try {
+          const id = String(item.opportunityId || item.id || "").trim();
+          if (!id) return;
 
-      if (!exists && ENABLE_EVENT_COLLECTION)
-        await Opportunity.create({ opportunityId: id, region, raw: item });
+          const statusText = String(item.status || item.Status || "").trim();
+          const isUnclaimed = !statusText || statusText.toUpperCase() === "E0004";
 
-      if (isUnclaimed) await enqueueClaim({ id, apiRoot, cookieHeader });
-    }
+          // store or update lead event in DB
+          if (ENABLE_EVENT_COLLECTION) {
+            await Opportunity.updateOne(
+              { opportunityId: id },
+              { $set: { region, raw: item, updatedAt: new Date() } },
+              { upsert: true }
+            );
+          }
+
+          // fire auto-claim
+          if (AUTO_CLAIM && isUnclaimed) {
+            log(`🚨 Queuing claim for ${region} → ${id} (${statusText || "no status"})`);
+            await enqueueClaim({ id, apiRoot, cookieHeader });
+          }
+        } catch (err) {
+          log(`⚠️ ${region}: failed to process item ${err.message}`);
+        }
+      })
+    );
   }
 
   // === monitor network responses ===
