@@ -27,9 +27,13 @@ export async function claimOpportunity({
     }
 
     const base = apiRoot.replace(/\/$/, "");
+    // Prefer last known-good path per region
+    const key = `pp:lastClaimPath:${region}`;
+    const last = global.__pp_lastClaimPath?.get?.(region) || null;
     const candidates = [
-      `${base}/Opportunity/${id}/Claim`, // Canonical capitalized path
-      `${base}/opportunity/${id}/claim`, // Lowercase fallback
+      ...(last ? [last.replace(/\{id\}/g, String(id))] : []),
+      `${base}/Opportunity/${id}/Claim`,
+      `${base}/opportunity/${id}/claim`,
     ];
 
     const headers = {
@@ -78,6 +82,13 @@ export async function claimOpportunity({
           latencyMs: ms,
           responseBody: body,
         });
+        // Persist last good path pattern
+        try {
+          const url = typeof res.url === "function" ? res.url() : claimUrl;
+          const templated = url.replace(String(id), "{id}");
+          if (!global.__pp_lastClaimPath) global.__pp_lastClaimPath = new Map();
+          global.__pp_lastClaimPath.set(region, templated);
+        } catch {}
         return { status, body, ms };
       } catch (err) {
         lastError = err;

@@ -96,8 +96,8 @@ See PROJECT_INSTRUCTIONS.md for deeper architectural notes.
 🧰 Scripts
 Command Action
 npm start Run main entry src/index.js
-npm run dev (if nodemon added) watch mode
-npm run test:powerplay Test PowerPlay source locally
+npm run dev:pp Start fast PowerPlay monitors (HTTP, 1s interval by default)
+npm run export:mongo Export last 6h events/claims from Mongo
 npm run cookies:save Save Playwright sessions
 
 🧠 Data Storage

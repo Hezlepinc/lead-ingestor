@@ -14,9 +14,9 @@ import { TTLSet } from "../utils/ttlCache.js";
  * }
  */
 
-const DEFAULT_INTERVAL_MS = Number(process.env.PP_POLL_INTERVAL_MS || 2000); // 2s
-const DEFAULT_PAGE_SIZE   = Number(process.env.PP_PAGE_SIZE || 50);          // keep payload tiny
-const JITTER_MS = 150; // reduce synchronized collisions
+const DEFAULT_INTERVAL_MS = Number(process.env.PP_POLL_INTERVAL_MS || 1000); // 1s default
+const DEFAULT_PAGE_SIZE   = Number(process.env.PP_PAGE_SIZE || 25);          // smaller payload
+const JITTER_MS = Number(process.env.PP_POLL_JITTER_MS || 120); // reduce synchronized collisions
 
 export async function startFastMonitors({
   regions,
@@ -68,7 +68,7 @@ export async function startFastMonitors({
       try {
         const res = await api.get(url, {
           headers: { "cache-control": "no-cache" },
-          timeout: Math.min(DEFAULT_INTERVAL_MS - 50, 1500),
+          timeout: Math.min(intervalMs - 50, 1400),
         });
         const status = res.status();
         if (status !== 200) {
