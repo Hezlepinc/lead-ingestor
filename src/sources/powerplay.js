@@ -5,7 +5,6 @@ import { log } from "../utils/logger.js";
 import { sendCustomerEmail, sendOfficeEmail } from "../utils/emailer.js";
 import { Auth } from "../models/Auth.js";
 import { Opportunity } from "../models/Opportunity.js";
-import { claimOpportunity } from "../processors/claimOpportunity.js";
 
 //
 // === Runtime Config ===
@@ -17,6 +16,54 @@ const DEFAULT_HOSTS = ["powerplay.generac.com", "dealerinsights.generac.com"];
 
 function isTargetApi(url) {
   return DEFAULT_HOSTS.some((h) => url.includes(h)) || url.includes("/powerplay3-server/");
+}
+
+//
+// === Helper: perform claim ===
+//
+async function claimOpportunity({ page, region, id, apiRoot, cookieHeader }) {
+  try {
+    const claimUrls = [
+      `${apiRoot}OpportunitySummary/Claim/${id}`, // legacy
+      `${apiRoot}Opportunity/ClaimDealer/${id}`,  // new style
+      `${apiRoot}Opportunity/DealerClaim/${id}`,  // alternate
+    ];
+
+    for (const claimUrl of claimUrls) {
+      log(`🚨 Attempting claim for ${region} → ${claimUrl}`);
+      const res = await page.request.post(claimUrl, {
+        headers: {
+          Cookie: cookieHeader,
+          "Content-Type": "application/json",
+          Accept: "application/json, text/plain, */*",
+        },
+        timeout: 20000,
+      });
+
+      const status = res.status();
+      const text = await res.text();
+      await Opportunity.create({
+        opportunityId: id,
+        region,
+        status,
+        responseBody: text?.slice(0, 500) || "",
+        createdAt: new Date(),
+      });
+
+      if (status >= 200 && status < 300) {
+        log(`✅ ${region}: successfully claimed opportunity ${id}`);
+        return true;
+      }
+
+      // retry only if 404 (endpoint mismatch)
+      if (status !== 404) break;
+    }
+
+    log(`⚠️ ${region}: all claim attempts failed for ${id}`);
+    return false;
+  } catch (err) {
+    log(`❌ ${region}: claimOpportunity error for ${id} → ${err.message}`);
+  }
 }
 
 //
@@ -47,7 +94,7 @@ export async function startPowerPlayMonitor({ region, url, cookiePath }) {
 
   const page = await context.newPage();
 
-  // auto refresh tokens on 401
+  // === token refresher ===
   async function refreshTokens(tag) {
     try {
       const cookies = await context.cookies();
@@ -66,12 +113,13 @@ export async function startPowerPlayMonitor({ region, url, cookiePath }) {
     }
   }
 
-  // fast claim queue
+  // === claim queue ===
   const claimQueue = [];
   let activeClaims = 0;
+
   async function enqueueClaim({ id, apiRoot, cookieHeader }) {
     if (!AUTO_CLAIM) return;
-    if (claimQueue.find((q) => q.id === id)) return; // dedupe
+    if (claimQueue.find((q) => q.id === id)) return;
     claimQueue.push({ id, apiRoot, cookieHeader });
     processQueue();
   }
@@ -90,11 +138,13 @@ export async function startPowerPlayMonitor({ region, url, cookiePath }) {
     }
   }
 
+  // === handle incoming leads ===
   async function handleOpportunityItems(items, apiRoot) {
     if (!Array.isArray(items)) return;
     const cookieHeader = (await context.cookies())
       .map((c) => `${c.name}=${c.value}`)
       .join("; ");
+
     for (const item of items) {
       const id = String(item.opportunityId || item.id || "");
       if (!id) continue;
@@ -102,12 +152,15 @@ export async function startPowerPlayMonitor({ region, url, cookiePath }) {
       const statusText = String(item.status || item.Status || item.state || "");
       const isUnclaimed =
         /E0004|unclaimed|available|new/i.test(statusText) || !statusText;
+
       if (!exists && ENABLE_EVENT_COLLECTION)
         await Opportunity.create({ opportunityId: id, region, raw: item });
+
       if (isUnclaimed) await enqueueClaim({ id, apiRoot, cookieHeader });
     }
   }
 
+  // === monitor network responses ===
   page.on("response", async (res) => {
     try {
       const url = res.url();
