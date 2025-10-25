@@ -1,11 +1,20 @@
-# Dependencies
+# -------------------------------
+# Core Node / dependencies
+# -------------------------------
 node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
 
-# Env
+# -------------------------------
+# Environment files
+# -------------------------------
 .env
 .env.*
 
+# -------------------------------
 # Logs
+# -------------------------------
 logs/
 *.log
 npm-debug.log*
@@ -13,30 +22,41 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Builds
+# -------------------------------
+# Builds & coverage
+# -------------------------------
 build/
 dist/
 coverage/
 
-# Playwright / output
+# -------------------------------
+# Playwright / testing output
+# -------------------------------
 .playwright/
 output/
+test-results/
+profiles/
 
-# Cookies / sessions
-# Ignore all cookie/session files by default...
-cookies/*
-# ...but explicitly include the five production dealer cookie JSONs
-!cookies/central-fl.json
-!cookies/jacksonville-fl.json
-!cookies/ft-myers-fl.json
-!cookies/austin-tx.json
-!cookies/dallas-tx.json
 
-# OS/editor
+
+# Large files / generated artifacts
+powerplay.generac.com.har
+playwright-profile/
+out/
+
+# Never commit debug dumps or raw storage exports
+cookies/*-storage.json
+
+# -------------------------------
+# OS / Editor junk
+# -------------------------------
 .DS_Store
+Thumbs.db
 .vscode/
 .idea/
 
-# Misc
-.tmp/
+# -------------------------------
+# Misc / temp
+# -------------------------------
 tmp/
+.tmp/
