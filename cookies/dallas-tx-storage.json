@@ -1,0 +1,118 @@
+{
+  "localStorage": [
+    {
+      "key": "LOGGED_IN",
+      "value": "true"
+    }
+  ],
+  "sessionStorage": [
+    {
+      "key": "PP3_DISMISSED_DIALOGS",
+      "value": "[]"
+    },
+    {
+      "key": "PP3_PROCESS_TYPE",
+      "value": "ZIHC"
+    },
+    {
+      "key": "id_token_expires_at",
+      "value": "1761388014000"
+    },
+    {
+      "key": "imp_user_roles",
+      "value": "[\"PP_Admin_HSB\",\"PP_SalesRep_HSB\"]"
+    },
+    {
+      "key": "nonce",
+      "value": "YnNMOFlhNUkzdEV4ektfX3dyR3RLWV96Y0pfaWlBeG5nak9rY21SZ0R0aVVJ"
+    },
+    {
+      "key": "imp_user_powerplay_lite",
+      "value": "false"
+    },
+    {
+      "key": "PKCE_verifier",
+      "value": "a2JqQXdJWFllR2YtaHRvbTBHMVZNNHguaVY5d3NybkhIMTdQLlY0QkpzVDlR"
+    },
+    {
+      "key": "userSalesRepId",
+      "value": "21960"
+    },
+    {
+      "key": "id_token_claims_obj",
+      "value": "{\"https://powerplay.generac.com/app/powerplayroles\":[\"PP_Admin_HSB\",\"PP_SalesRep_HSB\"],\"showpad/showpad_content_license\":\"partner\",\"given_name\":\"Anthony\",\"family_name\":\"Baumeister\",\"nickname\":\"dfwgenerators\",\"name\":\"Anthony Baumeister\",\"picture\":\"https://s.gravatar.com/avatar/be061fe1910babe533263d5b642d1b47?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fab.png\",\"updated_at\":\"2025-10-25T00:00:40.735Z\",\"email\":\"dfwgenerators@in-charge-electric.com\",\"email_verified\":true,\"iss\":\"https://id.generac.com/\",\"aud\":\"HvkeUNeH6BUiZ20WqRRO0GCKuiptA3C7\",\"sub\":\"auth0|6568988654dd8c7552da254d\",\"iat\":1761352014,\"exp\":1761388014,\"sid\":\"YIX-w28S21kRByRBku0SKM3gTLHCM5KV\",\"nonce\":\"YnNMOFlhNUkzdEV4ektfX3dyR3RLWV96Y0pfaWlBeG5nak9rY21SZ0R0aVVJ\"}"
+    },
+    {
+      "key": "refresh_token",
+      "value": "v1.MUD4Ecgrwnj5zf7KuFau9n3pO1U7vKbm0WHFtcDlT0yibJuDogToQPoPnEf-S7rpx2Xb2JVSPoIpwrCaL3OZ0-A"
+    },
+    {
+      "key": "id_token_stored_at",
+      "value": "1761352014743"
+    },
+    {
+      "key": "granted_scopes",
+      "value": "[\"openid\",\"profile\",\"email\",\"write:powerplay.server.api\",\"read:powerplay.server.api\",\"read:lead.pool.api\",\"write:lead.pool.api\",\"offline_access\"]"
+    },
+    {
+      "key": "imp_user_dealer_types",
+      "value": "[{\"id\":19652,\"productSegment\":1,\"dealerTypeId\":1,\"dealerTypeDescription\":\"PowerPlay\",\"dealerId\":15109,\"createdDateTime\":null,\"createdBy\":null,\"modifiedDateTime\":\"2025-10-13T17:31:11.8561249\",\"modifiedBy\":\"unknown\"}]"
+    },
+    {
+      "key": "access_token_stored_at",
+      "value": "1761352014743"
+    },
+    {
+      "key": "DEALER_DETAILS",
+      "value": "{\"dealerDetails\":{\"id\":15109,\"dealerCrmId\":\"0011228167\",\"dealerName\":\"IN CHARGE ELECTRICAL SERVICES, LLC\",\"phone\":\"15124229027\",\"phone2\":\"\",\"country\":\"US\",\"streetAddress1\":\"501 VALLEY RIDGE BLVD\",\"streetAddress2\":\"\",\"city\":\"LEWISVILLE\",\"state\":\"TX\",\"zipCode\":\"75057-3320\",\"website\":\"\",\"contactEmail\":\"dfwgenerators@in-charge-electric.com\",\"synchronyMerchantID\":0,\"cleanEnergy\":{\"enabled\":false,\"warmTransferSuspended\":false,\"warmTransferEnabled\":false,\"financing\":false,\"rebate\":false,\"virtualIhc\":false,\"leasing\":false},\"homeStandby\":{\"enabled\":true,\"warmTransferSuspended\":false,\"warmTransferEnabled\":false,\"financing\":false,\"rebate\":false,\"virtualIhc\":false,\"leasing\":false}}}"
+    },
+    {
+      "key": "crmDealerId",
+      "value": "0011228167"
+    },
+    {
+      "key": "FocusDate",
+      "value": "\"2025-10-25T00:26:54.849Z\""
+    },
+    {
+      "key": "imp_user_email",
+      "value": "dfwgenerators@in-charge-electric.com"
+    },
+    {
+      "key": "imp_user_firstname",
+      "value": "Anthony"
+    },
+    {
+      "key": "PP3_DISMISSED_ALERTS",
+      "value": "[]"
+    },
+    {
+      "key": "session_state",
+      "value": "undefined"
+    },
+    {
+      "key": "id_token",
+      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwczovL3Bvd2VycGxheS5nZW5lcmFjLmNvbS9hcHAvcG93ZXJwbGF5cm9sZXMiOlsiUFBfQWRtaW5fSFNCIiwiUFBfU2FsZXNSZXBfSFNCIl0sInNob3dwYWQvc2hvd3BhZF9jb250ZW50X2xpY2Vuc2UiOiJwYXJ0bmVyIiwiZ2l2ZW5fbmFtZSI6IkFudGhvbnkiLCJmYW1pbHlfbmFtZSI6IkJhdW1laXN0ZXIiLCJuaWNrbmFtZSI6ImRmd2dlbmVyYXRvcnMiLCJuYW1lIjoiQW50aG9ueSBCYXVtZWlzdGVyIiwicGljdHVyZSI6Imh0dHBzOi8vcy5ncmF2YXRhci5jb20vYXZhdGFyL2JlMDYxZmUxOTEwYmFiZTUzMzI2M2Q1YjY0MmQxYjQ3P3M9NDgwJnI9cGcmZD1odHRwcyUzQSUyRiUyRmNkbi5hdXRoMC5jb20lMkZhdmF0YXJzJTJGYWIucG5nIiwidXBkYXRlZF9hdCI6IjIwMjUtMTAtMjVUMDA6MDA6NDAuNzM1WiIsImVtYWlsIjoiZGZ3Z2VuZXJhdG9yc0Bpbi1jaGFyZ2UtZWxlY3RyaWMuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImlzcyI6Imh0dHBzOi8vaWQuZ2VuZXJhYy5jb20vIiwiYXVkIjoiSHZrZVVOZUg2QlVpWjIwV3FSUk8wR0NLdWlwdEEzQzciLCJzdWIiOiJhdXRoMHw2NTY4OTg4NjU0ZGQ4Yzc1NTJkYTI1NGQiLCJpYXQiOjE3NjEzNTIwMTQsImV4cCI6MTc2MTM4ODAxNCwic2lkIjoiWUlYLXcyOFMyMWtSQnlSQmt1MFNLTTNnVExIQ001S1YiLCJub25jZSI6IlluTk1PRmxoTlVremRFVjRla3RmWDNkeVIzUkxXVjk2WTBwZmFXbEJlRzVuYWs5clkyMVNaMFIwYVZWSiJ9.fSD4rXnizOfRqscT-bzaFM8cqCWjIBN7KZiRKNHOeNveusNoYW8sO4-2qFwoZpfeqcyFm78m22-TOo6WvD3Y3jS6DUmD-2bSOlzIiPuByA-VuYSTLkmwoeWvytkctFc2tB6fZjnoaGcBHMOW_BZkbfoxKTWqQp3aGs4XSpHmRxciTpbYvzMscbqaKQJznLDBP3i8qUSELakhKBzJEU6Hpnyag_PMKlacaC_g31bG8JMoCSbpAJoRfySqJno0wLv-KD-2XuHEFzXZkgnf4kb8vnnyhzN0Bvep6N0_wmAmLqpKBGpvDmsyiAV8qoisE_CwGrk8goc5-1ut48oZTdqxQA"
+    },
+    {
+      "key": "imp_user_lastname",
+      "value": "Baumeister"
+    },
+    {
+      "key": "access_token",
+      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiUFBfQWRtaW5fSFNCIiwiUFBfU2FsZXNSZXBfSFNCIl0sImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJBbnRob255IEJhdW1laXN0ZXIiLCJodHRwczovL3Bvd2VycGxheS5nZW5lcmFjLmNvbS9wcDMvQ3JtRGVhbGVySWQiOiIwMDExMjI4MTY3IiwiaXNzIjoiaHR0cHM6Ly9pZC5nZW5lcmFjLmNvbS8iLCJzdWIiOiJhdXRoMHw2NTY4OTg4NjU0ZGQ4Yzc1NTJkYTI1NGQiLCJhdWQiOlsiaHR0cDovL3Bvd2VycGxheS5nZW5lcmFjLmNvbS8iLCJodHRwczovL3Byb2QtZ2VuZXJhYy51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzYxMzUyMDE0LCJleHAiOjE3NjE0Mzg0MTQsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgd3JpdGU6cG93ZXJwbGF5LnNlcnZlci5hcGkgcmVhZDpwb3dlcnBsYXkuc2VydmVyLmFwaSByZWFkOmxlYWQucG9vbC5hcGkgd3JpdGU6bGVhZC5wb29sLmFwaSBvZmZsaW5lX2FjY2VzcyIsImF6cCI6Ikh2a2VVTmVINkJVaVoyMFdxUlJPMEdDS3VpcHRBM0M3IiwicGVybWlzc2lvbnMiOlsicmVhZDpjcm9ub2Z5LmFwaSIsInJlYWQ6bGVhZC5wb29sLmFwaSIsInJlYWQ6cG93ZXJwbGF5LnNlcnZlci5hcGkiLCJyZWFkOnJlcG9ydGluZy5wcDMuYXBpIiwid3JpdGU6Y3Jvbm9meS5hcGkiLCJ3cml0ZTpsZWFkLnBvb2wuYXBpIiwid3JpdGU6cG93ZXJwbGF5LnNlcnZlci5hcGkiLCJ3cml0ZTpyZXBvcnRpbmcucHAzLmFwaSJdfQ.GQa0AEj2LgITDVMsjgMZHgach8EVQNCIqkx49ckEM1bx_1_PtFSkGpnvzzOEQqrJNvD1RhaGvTzAbL50dpwXTsK7VCbx_anbd2tdWo3QDfQDXB1f3GOv-UP8Uu_n-001MGSsfe5IeDemXC4hJJi0F3WcLNU493AwiFINKPVB9Kffn9Sn5XR-nE3kJrgDL1OXqcPMYSUl1v2isBOcJQ8RbpX-E5gR9nFL45TjjjLgX2joW3S8JtNV3DOAzdb5Wrh2jHfamvEngN1ZGbY3BCtgj-nJSj67454U3Tf5QVALqCh2j4oeUu0RiQwJIfKL_n_BetWDSG6kvA4VoUyJLfTKRA"
+    },
+    {
+      "key": "crmSalesRepId",
+      "value": "0052653535"
+    },
+    {
+      "key": "expires_at",
+      "value": "1761438414743"
+    },
+    {
+      "key": "FilterData",
+      "value": "{\"salesRepId\":null,\"salesStageId\":null,\"coreProductId\":null,\"sourceId\":null,\"startDate\":null,\"endDate\":null,\"dateRangeSelection\":\"1\"}"
+    }
+  ]
+}

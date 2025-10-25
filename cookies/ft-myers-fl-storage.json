@@ -1,0 +1,118 @@
+{
+  "localStorage": [
+    {
+      "key": "LOGGED_IN",
+      "value": "true"
+    }
+  ],
+  "sessionStorage": [
+    {
+      "key": "PP3_DISMISSED_DIALOGS",
+      "value": "[]"
+    },
+    {
+      "key": "PP3_PROCESS_TYPE",
+      "value": "ZIHC"
+    },
+    {
+      "key": "id_token_expires_at",
+      "value": "1761386105000"
+    },
+    {
+      "key": "imp_user_roles",
+      "value": "[\"PP_Admin_HSB\",\"PP_SalesRep_HSB\"]"
+    },
+    {
+      "key": "nonce",
+      "value": "RVlwMklDLWdFOV9-UTRYcFlVanZEQTc3dkNKbW51cTV0cHprZWh3eHdobllC"
+    },
+    {
+      "key": "imp_user_powerplay_lite",
+      "value": "false"
+    },
+    {
+      "key": "PKCE_verifier",
+      "value": "Yk5xY1N6RHB6TllHLXY0QjBjNFpWY0JfSnd-RnZNQk5MU3BxMFl0aVVYWUIy"
+    },
+    {
+      "key": "userSalesRepId",
+      "value": "28597"
+    },
+    {
+      "key": "id_token_claims_obj",
+      "value": "{\"https://powerplay.generac.com/app/powerplayroles\":[\"PP_Admin_HSB\",\"PP_SalesRep_HSB\"],\"showpad/showpad_content_license\":\"partner\",\"given_name\":\"John\",\"family_name\":\"Hezlep\",\"nickname\":\"fortmyers.powerplay\",\"name\":\"John Hezlep\",\"picture\":\"https://s.gravatar.com/avatar/9cd339056d229226c7da9fdcfa245c5b?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fjh.png\",\"updated_at\":\"2025-10-24T23:55:04.126Z\",\"email\":\"fortmyers.powerplay@lenhartelectric.com\",\"email_verified\":true,\"iss\":\"https://id.generac.com/\",\"aud\":\"HvkeUNeH6BUiZ20WqRRO0GCKuiptA3C7\",\"sub\":\"auth0|68598e0bfe1bda008c783ce5\",\"iat\":1761350105,\"exp\":1761386105,\"sid\":\"NcUyImQSZLENDrSwZu1X26PKgLgziZwW\",\"nonce\":\"RVlwMklDLWdFOV9-UTRYcFlVanZEQTc3dkNKbW51cTV0cHprZWh3eHdobllC\"}"
+    },
+    {
+      "key": "refresh_token",
+      "value": "v1.MWPWILkWkdKC4Zm-aQSb6oSjxaR6Q9BXKvYGZqlXHTQkH_Bs85npU_ZQvTa9mRH4N7ZCG3Dmy5vdIMf2rvFM3bE"
+    },
+    {
+      "key": "id_token_stored_at",
+      "value": "1761350105425"
+    },
+    {
+      "key": "granted_scopes",
+      "value": "[\"openid\",\"profile\",\"email\",\"write:powerplay.server.api\",\"read:powerplay.server.api\",\"read:lead.pool.api\",\"write:lead.pool.api\",\"offline_access\"]"
+    },
+    {
+      "key": "imp_user_dealer_types",
+      "value": "[{\"id\":29610,\"productSegment\":1,\"dealerTypeId\":1,\"dealerTypeDescription\":\"PowerPlay\",\"dealerId\":18324,\"createdDateTime\":null,\"createdBy\":null,\"modifiedDateTime\":\"2025-07-15T13:05:37.2024648\",\"modifiedBy\":\"unknown\"},{\"id\":29911,\"productSegment\":2,\"dealerTypeId\":0,\"dealerTypeDescription\":\"Not Enrolled\",\"dealerId\":18324,\"createdDateTime\":\"2025-07-15T13:05:27.9368672\",\"createdBy\":\"unknown\",\"modifiedDateTime\":\"2025-07-15T13:05:37.2024684\",\"modifiedBy\":\"unknown\"}]"
+    },
+    {
+      "key": "access_token_stored_at",
+      "value": "1761350105424"
+    },
+    {
+      "key": "DEALER_DETAILS",
+      "value": "{\"dealerDetails\":{\"id\":18324,\"dealerCrmId\":\"0001029746\",\"dealerName\":\"LENHART ELECTRIC COMPANY, LLC (DBA LENHART ELECTRIC)\",\"phone\":\"3527485818\",\"phone2\":null,\"country\":\"US\",\"streetAddress1\":\"2855 WORK DR\",\"streetAddress2\":\"\",\"city\":\"FORT MYERS\",\"state\":\"FL\",\"zipCode\":\"33916-6553\",\"website\":\"\",\"contactEmail\":\"custsvclen@lenhartelectric.com\",\"synchronyMerchantID\":0,\"cleanEnergy\":{\"enabled\":false,\"warmTransferSuspended\":false,\"warmTransferEnabled\":false,\"financing\":false,\"rebate\":false,\"virtualIhc\":false,\"leasing\":false},\"homeStandby\":{\"enabled\":true,\"warmTransferSuspended\":false,\"warmTransferEnabled\":false,\"financing\":false,\"rebate\":false,\"virtualIhc\":false,\"leasing\":false}}}"
+    },
+    {
+      "key": "crmDealerId",
+      "value": "0001029746"
+    },
+    {
+      "key": "FocusDate",
+      "value": "\"2025-10-24T23:55:43.810Z\""
+    },
+    {
+      "key": "imp_user_email",
+      "value": "fortmyers.powerplay@lenhartelectric.com"
+    },
+    {
+      "key": "imp_user_firstname",
+      "value": "John"
+    },
+    {
+      "key": "PP3_DISMISSED_ALERTS",
+      "value": "[]"
+    },
+    {
+      "key": "session_state",
+      "value": "undefined"
+    },
+    {
+      "key": "id_token",
+      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwczovL3Bvd2VycGxheS5nZW5lcmFjLmNvbS9hcHAvcG93ZXJwbGF5cm9sZXMiOlsiUFBfQWRtaW5fSFNCIiwiUFBfU2FsZXNSZXBfSFNCIl0sInNob3dwYWQvc2hvd3BhZF9jb250ZW50X2xpY2Vuc2UiOiJwYXJ0bmVyIiwiZ2l2ZW5fbmFtZSI6IkpvaG4iLCJmYW1pbHlfbmFtZSI6IkhlemxlcCIsIm5pY2tuYW1lIjoiZm9ydG15ZXJzLnBvd2VycGxheSIsIm5hbWUiOiJKb2huIEhlemxlcCIsInBpY3R1cmUiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci85Y2QzMzkwNTZkMjI5MjI2YzdkYTlmZGNmYTI0NWM1Yj9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZjZG4uYXV0aDAuY29tJTJGYXZhdGFycyUyRmpoLnBuZyIsInVwZGF0ZWRfYXQiOiIyMDI1LTEwLTI0VDIzOjU1OjA0LjEyNloiLCJlbWFpbCI6ImZvcnRteWVycy5wb3dlcnBsYXlAbGVuaGFydGVsZWN0cmljLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczovL2lkLmdlbmVyYWMuY29tLyIsImF1ZCI6Ikh2a2VVTmVINkJVaVoyMFdxUlJPMEdDS3VpcHRBM0M3Iiwic3ViIjoiYXV0aDB8Njg1OThlMGJmZTFiZGEwMDhjNzgzY2U1IiwiaWF0IjoxNzYxMzUwMTA1LCJleHAiOjE3NjEzODYxMDUsInNpZCI6Ik5jVXlJbVFTWkxFTkRyU3dadTFYMjZQS2dMZ3ppWndXIiwibm9uY2UiOiJSVmx3TWtsRExXZEZPVjktVVRSWWNGbFZhblpFUVRjM2RrTktiVzUxY1RWMGNIcHJaV2gzZUhkb2JsbEMifQ.JXEpMs0NKHbO1-SGoA0_slclOkVzjO9C9fqrW7IM-06SQPn_2jNKpnRWTcOg9I1uhwEP2b01XVP8_wBYDHm4UjM4hjgOIBxqkdkR5fHLoHSKWLVTJXb-2gX0gd5rYCAB8-fq2vM2eYRVEhbXkacigVziwpDW7uNgsma-j-h1PTvJl62Rt865NsqNK-lCLR7utvHwRmF5rurxsdHjrw1Bm7g5XAQOKO2jchgKBDnXdvCL-RpTj8JayAtLhrnsmjhehdgngUbKifBhKlEqVgBNL2_ZdC5Lg_pZ8llYpNdAT6RaGtOa1sRvT0hVKjllQJI4FIbX2caPzigM3IF2mFjhDg"
+    },
+    {
+      "key": "imp_user_lastname",
+      "value": "Hezlep"
+    },
+    {
+      "key": "access_token",
+      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiUFBfQWRtaW5fSFNCIiwiUFBfU2FsZXNSZXBfSFNCIl0sImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJKb2huIEhlemxlcCIsImh0dHBzOi8vcG93ZXJwbGF5LmdlbmVyYWMuY29tL3BwMy9Dcm1EZWFsZXJJZCI6IjAwMDEwMjk3NDYiLCJpc3MiOiJodHRwczovL2lkLmdlbmVyYWMuY29tLyIsInN1YiI6ImF1dGgwfDY4NTk4ZTBiZmUxYmRhMDA4Yzc4M2NlNSIsImF1ZCI6WyJodHRwOi8vcG93ZXJwbGF5LmdlbmVyYWMuY29tLyIsImh0dHBzOi8vcHJvZC1nZW5lcmFjLnVzLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3NjEzNTAxMDUsImV4cCI6MTc2MTQzNjUwNSwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCB3cml0ZTpwb3dlcnBsYXkuc2VydmVyLmFwaSByZWFkOnBvd2VycGxheS5zZXJ2ZXIuYXBpIHJlYWQ6bGVhZC5wb29sLmFwaSB3cml0ZTpsZWFkLnBvb2wuYXBpIG9mZmxpbmVfYWNjZXNzIiwiYXpwIjoiSHZrZVVOZUg2QlVpWjIwV3FSUk8wR0NLdWlwdEEzQzciLCJwZXJtaXNzaW9ucyI6WyJyZWFkOmNyb25vZnkuYXBpIiwicmVhZDpsZWFkLnBvb2wuYXBpIiwicmVhZDpwb3dlcnBsYXkuc2VydmVyLmFwaSIsInJlYWQ6cmVwb3J0aW5nLnBwMy5hcGkiLCJ3cml0ZTpjcm9ub2Z5LmFwaSIsIndyaXRlOmxlYWQucG9vbC5hcGkiLCJ3cml0ZTpwb3dlcnBsYXkuc2VydmVyLmFwaSIsIndyaXRlOnJlcG9ydGluZy5wcDMuYXBpIl19.aghL0sQqxJyKrt68W9NwWvQsmeepAP3NpVqOAvwxFfmPB7CWuG2ShbtAXNH9LOGORjMKIzCV75axyIPSJhiiJYA0e9NyepfpeYAGxKN8SJpP9YaOrhPov8wC_4Ph-a9QZun3lfjilQGFUWiSsTH22mcgf8BLTrV0pDwaP-VxE9d4tgZNA3hVpZDxEHNVqptBOqhC2H2MyMSdxD5MRIswA9Cx40nIe6jahjDSnREI86kFwqRFBDgUQOEJBy4FnoUIA5EV3yk4NsAos5X2ypTH4Zec5NIO2dsS2dacOh9a8WvkY2E-Pvfy01kQJorlsx-XEwsomoaD9pFBgcMmtMhAUA"
+    },
+    {
+      "key": "crmSalesRepId",
+      "value": "0052726653"
+    },
+    {
+      "key": "expires_at",
+      "value": "1761436505425"
+    },
+    {
+      "key": "FilterData",
+      "value": "{\"salesRepId\":null,\"salesStageId\":null,\"coreProductId\":null,\"sourceId\":null,\"startDate\":null,\"endDate\":null,\"dateRangeSelection\":\"1\"}"
+    }
+  ]
+}
