@@ -3,7 +3,6 @@ import path from "path";
 import fs from "fs";
 import { connectDB } from "./config/db.js";
 import { Lead } from "./models/Lead.js";
-import { Event } from "./models/Event.js";
 import { Opportunity } from "./models/Opportunity.js";
 import { startPowerPlayMonitor } from "./sources/powerplay.js";
 import { log } from "./utils/logger.js";
@@ -35,7 +34,7 @@ import { log } from "./utils/logger.js";
   await connectDB();
 
   // ============================================================
-  // === Unified Lead Handler with Opportunity Deduplication ====
+  // === Lead & Opportunity Handler (Events Disabled) ============
   // ============================================================
   const handleLead = async (data) => {
     try {
@@ -49,9 +48,8 @@ import { log } from "./utils/logger.js";
 
         // Check if this opportunity already exists
         const existing = await Opportunity.findOne({ powerplayId: id });
-
         if (existing) {
-          // Already seen before — update metadata but don't reinsert
+          // Already seen — just update metadata
           await Opportunity.updateOne(
             { powerplayId: id },
             {
@@ -89,9 +87,9 @@ import { log } from "./utils/logger.js";
         await Lead.create(data);
         log(`💾 Lead saved → ${data.email || data.phone || data.name || "unknown"}`);
       } else {
-        await Event.create(data);
+        // 🚫 Skip saving events to conserve space
         log(
-          `📥 Event saved → ${data.type || "generic"} ${
+          `🪶 Skipped event → ${data.type || "generic"} ${
             data.region ? "(" + data.region + ")" : ""
           }`
         );
@@ -159,13 +157,11 @@ import { log } from "./utils/logger.js";
     const cookiePath = cookieFiles[i];
     const region = regionsForRun[i] || `Dealer ${i + 1}`;
 
-    // --- Verify cookie exists ---
     if (!fs.existsSync(cookiePath)) {
       log(`⚠️ Missing cookie file for ${region}: ${cookiePath}`);
       continue;
     }
 
-    // --- Verify token ---
     const hasToken = validateToken(cookiePath, region);
     if (!hasToken) {
       log(`⏸️ Skipping ${region} until valid token exists. Retrying in 60 seconds...`);
@@ -173,7 +169,6 @@ import { log } from "./utils/logger.js";
       continue;
     }
 
-    // --- Start watcher ---
     log(`🧭 Initializing monitor for ${region} using ${cookiePath}`);
     log(`🕵️ Monitoring PowerPlay (${region}) → ${url}`);
 
@@ -183,7 +178,6 @@ import { log } from "./utils/logger.js";
       log(`❌ Failed to start monitor for ${region}: ${err.message}`);
     }
 
-    // --- Small stagger between launches ---
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 1000)); // small stagger
   }
 })();
