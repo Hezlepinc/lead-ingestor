@@ -175,12 +175,17 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
           const statusText = String(opp.status || opp.Status || opp.state || "");
           if (!oppId) continue;
 
+          // Deduplicate: skip if already stored
+          let exists = false;
           try {
-            const exists = await Opportunity.findOne({ opportunityId: oppId }).lean();
-            if (!exists) {
-              await Opportunity.create({ opportunityId: oppId, region, raw: opp });
-            }
-          } catch { /* ignore */ }
+            exists = Boolean(await Opportunity.findOne({ opportunityId: oppId }).lean());
+          } catch {}
+          if (exists) continue;
+
+          // Persist first time we see it
+          try {
+            await Opportunity.create({ opportunityId: oppId, region, raw: opp });
+          } catch {}
 
           if (statusText === "E0004") {
             log(`🧲 New unclaimed opportunity detected (${region}): ${oppId}${opp.customerFirstName ? ` for ${opp.customerFirstName} ${opp.customerLastName || ""}` : ""}`);
@@ -190,7 +195,7 @@ export async function startPowerPlayMonitor({ onLead, url, cookiePath, region })
                 continue;
               }
               try {
-                const result = await claimOpportunity({ page, region, id: oppId, apiRoot, cookieHeader });
+                const result = await claimOpportunity({ page, region, id: oppId, apiRoot, cookieHeader, cookiePath });
                 if (result && typeof result.status === "number" && result.status === 429) {
                   backoffUntilTs = Date.now() + 120000; // 2 minutes
                   log(`⚠️ ${region}: throttled on claim ${oppId}, backing off 2m`);

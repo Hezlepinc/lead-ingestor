@@ -1,8 +1,10 @@
 import { log } from "../utils/logger.js";
 import { Auth } from "../models/Auth.js";
 import { Claim } from "../models/Claim.js";
+import fs from "fs";
+import path from "path";
 
-export async function claimOpportunity({ page, region, id, apiRoot, cookieHeader }) {
+export async function claimOpportunity({ page, region, id, apiRoot, cookieHeader, cookiePath }) {
   try {
     const auth = await Auth.findOne({ region }).lean();
     if (!auth) {
@@ -22,6 +24,21 @@ export async function claimOpportunity({ page, region, id, apiRoot, cookieHeader
       ...(auth?.jwt ? { authorization: `Bearer ${auth.jwt}` } : {}),
       ...(auth?.xsrf ? { "x-xsrf-token": auth.xsrf } : {}),
     };
+
+    // If a token file exists for this region, prefer it for Authorization header
+    try {
+      if (cookiePath) {
+        const baseName = path.basename(cookiePath, ".json");
+        const dir = path.dirname(cookiePath);
+        const tokenPath = path.join(dir, `${baseName}-token.txt`);
+        if (fs.existsSync(tokenPath)) {
+          const token = (fs.readFileSync(tokenPath, "utf8").trim() || "");
+          if (token && /^Bearer\s+/i.test(token)) {
+            headers.authorization = token;
+          }
+        }
+      }
+    } catch {}
 
     const started = Date.now();
     let lastError = null;
