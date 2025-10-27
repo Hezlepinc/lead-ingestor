@@ -184,6 +184,44 @@ export async function startPowerPlayMonitor({ region, url, cookiePath }) {
     log(`❌ ${region}: failed to load dashboard ${err.message}`);
   }
 
+  // === Force periodic API polling ===
+  const POLL_INTERVAL_MS = Number(process.env.PP_POLL_INTERVAL_MS || 30000);
+  const pollUrl = `${baseUrl.replace(/\/$/, "")}/app/powerplay3-server/api/OpportunitySummary/Pending/Dealer?PageSize=1000`;
+
+  async function poll() {
+    try {
+      const res = await page.request.get(pollUrl, { timeout: Math.min(POLL_INTERVAL_MS - 500, 5000) });
+      if (res.status() === 401) {
+        await refreshTokens("poll-401");
+        return;
+      }
+      const json = await res.json().catch(() => null);
+      const items = Array.isArray(json?.pagedResults)
+        ? json.pagedResults
+        : Array.isArray(json?.data)
+        ? json.data
+        : Array.isArray(json)
+        ? json
+        : [];
+      log(`📡 ${region}: polled ${items.length} opportunities`);
+      const idx = pollUrl.toLowerCase().indexOf("/api/");
+      const apiRoot = idx !== -1 ? pollUrl.slice(0, idx + 5) : `${baseUrl.replace(/\/$/, "")}/powerplay3-server/api/`;
+      if (items.length) await handleOpportunityItems(items, apiRoot);
+    } catch (err) {
+      log(`⚠️ ${region}: poll failed ${err.message}`);
+    }
+  }
+
+  // fire immediately and schedule loop
+  await poll();
+  setInterval(poll, POLL_INTERVAL_MS);
+
+  // === Heartbeat ===
+  const HEARTBEAT_INTERVAL_MS = Number(process.env.HEARTBEAT_INTERVAL_MS || 60000);
+  setInterval(() => {
+    log(`💓 Heartbeat — ${region} monitor alive @ ${new Date().toISOString()}`);
+  }, HEARTBEAT_INTERVAL_MS);
+
   // keep alive
   await new Promise(() => {});
 }
