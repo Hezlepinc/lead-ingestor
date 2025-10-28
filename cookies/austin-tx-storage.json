@@ -16,7 +16,7 @@
     },
     {
       "key": "id_token_expires_at",
-      "value": "1761387969000"
+      "value": "1761703066000"
     },
     {
       "key": "imp_user_roles",
@@ -24,7 +24,7 @@
     },
     {
       "key": "nonce",
-      "value": "UEItLmJRcXdxcXhzMW9lSGxXSTM0VmQ5ZjhURUo5bE9adzRjU2JLb1dWOHVC"
+      "value": "WHJnN1hTV1libURNRER6d20yRTh5dXZUdVhHLkVubWFzNm5UbzAwSWF-YjVv"
     },
     {
       "key": "imp_user_powerplay_lite",
@@ -32,7 +32,7 @@
     },
     {
       "key": "PKCE_verifier",
-      "value": "bXhFcW82bDFuNGh4Z0VCZGgzNU8tcXd4RXhkV1BhRk5VekdteV81d1pBOHJz"
+      "value": "d3lLWS56Q0ZWeEc5cElDSk42Y1BpdHRoaGxsbGoyVlk0anouWTRxUnU0dzNH"
     },
     {
       "key": "userSalesRepId",
@@ -40,15 +40,15 @@
     },
     {
       "key": "id_token_claims_obj",
-      "value": "{\"https://powerplay.generac.com/app/powerplayroles\":[\"PP_Admin_HSB\",\"PP_CallAgent_HSB\",\"PP_SalesRep_HSB\"],\"showpad/showpad_content_license\":\"partner\",\"given_name\":\"Stephanie\",\"family_name\":\"Perez\",\"nickname\":\"amsservice\",\"name\":\"Stephanie Perez\",\"picture\":\"https://s.gravatar.com/avatar/1cc6540d3c6c56922cb9aa8a38de8e93?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fsp.png\",\"updated_at\":\"2025-10-24T23:56:50.182Z\",\"email\":\"amsservice@in-charge-electric.com\",\"email_verified\":true,\"iss\":\"https://id.generac.com/\",\"aud\":\"HvkeUNeH6BUiZ20WqRRO0GCKuiptA3C7\",\"sub\":\"auth0|67db3f70d66596c69696428a\",\"iat\":1761351969,\"exp\":1761387969,\"sid\":\"4sZIgMDN9ibT2VdL3_VukFGPPSsIEeOu\",\"nonce\":\"UEItLmJRcXdxcXhzMW9lSGxXSTM0VmQ5ZjhURUo5bE9adzRjU2JLb1dWOHVC\"}"
+      "value": "{\"https://powerplay.generac.com/app/powerplayroles\":[\"PP_Admin_HSB\",\"PP_CallAgent_HSB\",\"PP_SalesRep_HSB\"],\"showpad/showpad_content_license\":\"partner\",\"given_name\":\"Stephanie\",\"family_name\":\"Perez\",\"nickname\":\"amsservice\",\"name\":\"Stephanie Perez\",\"picture\":\"https://s.gravatar.com/avatar/1cc6540d3c6c56922cb9aa8a38de8e93?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fsp.png\",\"updated_at\":\"2025-10-28T15:39:31.384Z\",\"email\":\"amsservice@in-charge-electric.com\",\"email_verified\":true,\"iss\":\"https://id.generac.com/\",\"aud\":\"HvkeUNeH6BUiZ20WqRRO0GCKuiptA3C7\",\"sub\":\"auth0|67db3f70d66596c69696428a\",\"iat\":1761667066,\"exp\":1761703066,\"sid\":\"UVm-9jdG853MKo3PiJYBu205nR0NeR62\",\"nonce\":\"WHJnN1hTV1libURNRER6d20yRTh5dXZUdVhHLkVubWFzNm5UbzAwSWF-YjVv\"}"
     },
     {
       "key": "refresh_token",
-      "value": "v1.MbJEAhONKAH91s4fjqO08azpbrS05JBLz04BObDsBS2rCL4qQlW3ypQsiOacttVGhxEhD8TN_JVKk5M3tbEb7YQ"
+      "value": "v1.MSnKMu_bTsZ7MtCeP_GUL3Tcm7Y64K_qIMy8lum1h7eZqcDasJUdEKG8LBN5kzGxfHKTl8JOojtfMG4HtuSguU0"
     },
     {
       "key": "id_token_stored_at",
-      "value": "1761351969842"
+      "value": "1761667068101"
     },
     {
       "key": "granted_scopes",
@@ -60,7 +60,7 @@
     },
     {
       "key": "access_token_stored_at",
-      "value": "1761351969842"
+      "value": "1761667068100"
     },
     {
       "key": "DEALER_DETAILS",
@@ -72,7 +72,7 @@
     },
     {
       "key": "FocusDate",
-      "value": "\"2025-10-25T00:26:09.950Z\""
+      "value": "\"2025-10-28T15:57:48.234Z\""
     },
     {
       "key": "imp_user_email",
@@ -92,7 +92,7 @@
     },
     {
       "key": "id_token",
-      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwczovL3Bvd2VycGxheS5nZW5lcmFjLmNvbS9hcHAvcG93ZXJwbGF5cm9sZXMiOlsiUFBfQWRtaW5fSFNCIiwiUFBfQ2FsbEFnZW50X0hTQiIsIlBQX1NhbGVzUmVwX0hTQiJdLCJzaG93cGFkL3Nob3dwYWRfY29udGVudF9saWNlbnNlIjoicGFydG5lciIsImdpdmVuX25hbWUiOiJTdGVwaGFuaWUiLCJmYW1pbHlfbmFtZSI6IlBlcmV6Iiwibmlja25hbWUiOiJhbXNzZXJ2aWNlIiwibmFtZSI6IlN0ZXBoYW5pZSBQZXJleiIsInBpY3R1cmUiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci8xY2M2NTQwZDNjNmM1NjkyMmNiOWFhOGEzOGRlOGU5Mz9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZjZG4uYXV0aDAuY29tJTJGYXZhdGFycyUyRnNwLnBuZyIsInVwZGF0ZWRfYXQiOiIyMDI1LTEwLTI0VDIzOjU2OjUwLjE4MloiLCJlbWFpbCI6ImFtc3NlcnZpY2VAaW4tY2hhcmdlLWVsZWN0cmljLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczovL2lkLmdlbmVyYWMuY29tLyIsImF1ZCI6Ikh2a2VVTmVINkJVaVoyMFdxUlJPMEdDS3VpcHRBM0M3Iiwic3ViIjoiYXV0aDB8NjdkYjNmNzBkNjY1OTZjNjk2OTY0MjhhIiwiaWF0IjoxNzYxMzUxOTY5LCJleHAiOjE3NjEzODc5NjksInNpZCI6IjRzWklnTUROOWliVDJWZEwzX1Z1a0ZHUFBTc0lFZU91Iiwibm9uY2UiOiJVRUl0TG1KUmNYZHhjWGh6TVc5bFNHeFhTVE0wVm1RNVpqaFVSVW81YkU5YWR6UmpVMkpMYjFkV09IVkMifQ.RK1InXi-CzaikIkCALsl7ZrfGXH5RJmIUhmdWwlJEpmZSOTVqrhv4Bgfs7aeg9hd8hMrNXPKDLE4R7SneTrgMlTt08suL_007HLKGkfvV9BwhizSQGpa_4sNQI3_1LYhgYGcFwi1Fr1JMv5quMDZTypJ_Xepdno0BMRjGCL_QhirIQ0fR3Cq8CFaTKG6psLrFjS3ZwHgD1KkV1xEYZINgOIQEqhj0l0eCmMMQi73pK_up8sIY8XhNCqcyL8TpvJontIWgqLlRW-GeheDJCApgRbGxF5-ZT5dbj6wnuTjRPJdDKPEhowGU5T2rN8AIHIje4-Xbqfl2Qf27AF4fTsJiA"
+      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwczovL3Bvd2VycGxheS5nZW5lcmFjLmNvbS9hcHAvcG93ZXJwbGF5cm9sZXMiOlsiUFBfQWRtaW5fSFNCIiwiUFBfQ2FsbEFnZW50X0hTQiIsIlBQX1NhbGVzUmVwX0hTQiJdLCJzaG93cGFkL3Nob3dwYWRfY29udGVudF9saWNlbnNlIjoicGFydG5lciIsImdpdmVuX25hbWUiOiJTdGVwaGFuaWUiLCJmYW1pbHlfbmFtZSI6IlBlcmV6Iiwibmlja25hbWUiOiJhbXNzZXJ2aWNlIiwibmFtZSI6IlN0ZXBoYW5pZSBQZXJleiIsInBpY3R1cmUiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci8xY2M2NTQwZDNjNmM1NjkyMmNiOWFhOGEzOGRlOGU5Mz9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZjZG4uYXV0aDAuY29tJTJGYXZhdGFycyUyRnNwLnBuZyIsInVwZGF0ZWRfYXQiOiIyMDI1LTEwLTI4VDE1OjM5OjMxLjM4NFoiLCJlbWFpbCI6ImFtc3NlcnZpY2VAaW4tY2hhcmdlLWVsZWN0cmljLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczovL2lkLmdlbmVyYWMuY29tLyIsImF1ZCI6Ikh2a2VVTmVINkJVaVoyMFdxUlJPMEdDS3VpcHRBM0M3Iiwic3ViIjoiYXV0aDB8NjdkYjNmNzBkNjY1OTZjNjk2OTY0MjhhIiwiaWF0IjoxNzYxNjY3MDY2LCJleHAiOjE3NjE3MDMwNjYsInNpZCI6IlVWbS05amRHODUzTUtvM1BpSllCdTIwNW5SME5lUjYyIiwibm9uY2UiOiJXSEpuTjFoVFYxbGliVVJOUkVSNmQyMHlSVGg1ZFhaVWRWaEhMa1Z1YldGek5tNVViekF3U1dGLVlqVnYifQ.mUdU9PzHTrWG8JxwVbLa48qFFvQjXmSYiUfKu45yZ9CeXcsKoradHYKbV3RHdKnyeHYnRf-VY5Aih-aMgIqy1NQp92J7EoPZWPhs6GXI9zq_YuAJ5I1i5ZUp1NoeW2CCWx5c3LWX_EmfLR-xSla8ee35pv6PHSo_F51D_z8y7Qa0HucC6Es770W1MGW2016StSqlW8Ps7uc2ioqzNWmHUxL7rB-EGXi338E9G4YGsoan8zRS0E93KYLguY61u6Pntu76JfCGd8_uYSQ_866kzninmE26JzZsYqx3WzL4zJwx2vuvNd71xaQ1V6q8Xaahy4YrjUQ9YEPeWL5iCZXnWQ"
     },
     {
       "key": "imp_user_lastname",
@@ -100,7 +100,7 @@
     },
     {
       "key": "access_token",
-      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiUFBfQWRtaW5fSFNCIiwiUFBfQ2FsbEFnZW50X0hTQiIsIlBQX1NhbGVzUmVwX0hTQiJdLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiU3RlcGhhbmllIFBlcmV6IiwiaHR0cHM6Ly9wb3dlcnBsYXkuZ2VuZXJhYy5jb20vcHAzL0NybURlYWxlcklkIjoiMDAxMTE3OTE5MyIsImlzcyI6Imh0dHBzOi8vaWQuZ2VuZXJhYy5jb20vIiwic3ViIjoiYXV0aDB8NjdkYjNmNzBkNjY1OTZjNjk2OTY0MjhhIiwiYXVkIjpbImh0dHA6Ly9wb3dlcnBsYXkuZ2VuZXJhYy5jb20vIiwiaHR0cHM6Ly9wcm9kLWdlbmVyYWMudXMuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc2MTM1MTk2OSwiZXhwIjoxNzYxNDM4MzY5LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIHdyaXRlOnBvd2VycGxheS5zZXJ2ZXIuYXBpIHJlYWQ6cG93ZXJwbGF5LnNlcnZlci5hcGkgcmVhZDpsZWFkLnBvb2wuYXBpIHdyaXRlOmxlYWQucG9vbC5hcGkgb2ZmbGluZV9hY2Nlc3MiLCJhenAiOiJIdmtlVU5lSDZCVWlaMjBXcVJSTzBHQ0t1aXB0QTNDNyIsInBlcm1pc3Npb25zIjpbInJlYWQ6Y3Jvbm9meS5hcGkiLCJyZWFkOmxlYWQucG9vbC5hcGkiLCJyZWFkOnBvd2VycGxheS5zZXJ2ZXIuYXBpIiwicmVhZDpyZXBvcnRpbmcucHAzLmFwaSIsIndyaXRlOmNyb25vZnkuYXBpIiwid3JpdGU6bGVhZC5wb29sLmFwaSIsIndyaXRlOnBvd2VycGxheS5zZXJ2ZXIuYXBpIiwid3JpdGU6cmVwb3J0aW5nLnBwMy5hcGkiXX0.YA8Mxw7ZrEhteYa28XDxlqkSwrP_GKMrFvBkVI2gueo-Lw3b3uCAZssDcQNhH33roGoSPRkEeGKrqkg5gJzqOj_tdd2FPOw0L7Ghbb75x7M32qjpZQ7mjtB6pAXB0w6Plfdylvw7oRTevfGQFOwJCahsWvyHTgW7s71isv01WORyN0X5oNpS6j7ZhPDO8PA6L3Cc5-3O74xWjyRbjRnUlUMvyC97puUJlVLr4YZvjcf3WPp7L2V3fT01KY_P4a0hBo2D9vAumxA0YhiuPoGwdrJbuTXzxRDwey83gf4pehbKbEs4GSADKD9qb4X9hrpu2WJxpJInWc-LG6sb7rbkbQ"
+      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiUFBfQWRtaW5fSFNCIiwiUFBfQ2FsbEFnZW50X0hTQiIsIlBQX1NhbGVzUmVwX0hTQiJdLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiU3RlcGhhbmllIFBlcmV6IiwiaHR0cHM6Ly9wb3dlcnBsYXkuZ2VuZXJhYy5jb20vcHAzL0NybURlYWxlcklkIjoiMDAxMTE3OTE5MyIsImlzcyI6Imh0dHBzOi8vaWQuZ2VuZXJhYy5jb20vIiwic3ViIjoiYXV0aDB8NjdkYjNmNzBkNjY1OTZjNjk2OTY0MjhhIiwiYXVkIjpbImh0dHA6Ly9wb3dlcnBsYXkuZ2VuZXJhYy5jb20vIiwiaHR0cHM6Ly9wcm9kLWdlbmVyYWMudXMuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc2MTY2NzA2NiwiZXhwIjoxNzYxNzUzNDY2LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIHdyaXRlOnBvd2VycGxheS5zZXJ2ZXIuYXBpIHJlYWQ6cG93ZXJwbGF5LnNlcnZlci5hcGkgcmVhZDpsZWFkLnBvb2wuYXBpIHdyaXRlOmxlYWQucG9vbC5hcGkgb2ZmbGluZV9hY2Nlc3MiLCJhenAiOiJIdmtlVU5lSDZCVWlaMjBXcVJSTzBHQ0t1aXB0QTNDNyIsInBlcm1pc3Npb25zIjpbInJlYWQ6Y3Jvbm9meS5hcGkiLCJyZWFkOmxlYWQucG9vbC5hcGkiLCJyZWFkOnBvd2VycGxheS5zZXJ2ZXIuYXBpIiwicmVhZDpyZXBvcnRpbmcucHAzLmFwaSIsIndyaXRlOmNyb25vZnkuYXBpIiwid3JpdGU6bGVhZC5wb29sLmFwaSIsIndyaXRlOnBvd2VycGxheS5zZXJ2ZXIuYXBpIiwid3JpdGU6cmVwb3J0aW5nLnBwMy5hcGkiXX0.o99C_nZNBKz0kg3Tc-mqCjfx1hAxTXtrf-kL-qtfQOO0ewE6ktE59tQVMSqdagI4y38p-pRh0SO3d1p4As7GdF3DypTEv3O5N1JN8XYGVp4j5gVaLY4jB2_bq0kOkjE-q2K84hp-5ONDLTiFCWCYExOTdMYY2s3sXsxSaF8s4zcCnZKR6NQd_s9IxRm9DqYGEnolkn5vJz1GVpn8bC8bQhmNDWsvPhMj54y43QNjOixFuBN-Fy7z3kpkbdmhMbbjeQmDrGpDFF8nSUfJr-Yi62zTCSGAGoCS8CYAkCwwG-y5rUCaKAx0SL9SIj83ZvwDKcBm5Bvpv_Gw-yL7hsXOqA"
     },
     {
       "key": "crmSalesRepId",
@@ -108,11 +108,7 @@
     },
     {
       "key": "expires_at",
-      "value": "1761438369842"
-    },
-    {
-      "key": "FilterData",
-      "value": "{\"salesRepId\":null,\"salesStageId\":null,\"coreProductId\":null,\"sourceId\":null,\"startDate\":null,\"endDate\":null,\"dateRangeSelection\":\"1\"}"
+      "value": "1761753468100"
     }
   ]
 }

@@ -16,7 +16,7 @@
     },
     {
       "key": "id_token_expires_at",
-      "value": "1761386105000"
+      "value": "1761701912000"
     },
     {
       "key": "imp_user_roles",
@@ -24,7 +24,7 @@
     },
     {
       "key": "nonce",
-      "value": "RVlwMklDLWdFOV9-UTRYcFlVanZEQTc3dkNKbW51cTV0cHprZWh3eHdobllC"
+      "value": "X3JSMnR3ZXhPMDNMQWx3YVpONGpWSHpkQzB1T1dGUEdQRGRYSFI1c2p5VG9v"
     },
     {
       "key": "imp_user_powerplay_lite",
@@ -32,23 +32,23 @@
     },
     {
       "key": "PKCE_verifier",
-      "value": "Yk5xY1N6RHB6TllHLXY0QjBjNFpWY0JfSnd-RnZNQk5MU3BxMFl0aVVYWUIy"
+      "value": "S1gwMy1CbH4zVXZETkVORG1QVGdQbGNuNk8xMERPQUdCMGh1MTdBUGJlY2U5"
     },
     {
       "key": "userSalesRepId",
-      "value": "28597"
+      "value": "30181"
     },
     {
       "key": "id_token_claims_obj",
-      "value": "{\"https://powerplay.generac.com/app/powerplayroles\":[\"PP_Admin_HSB\",\"PP_SalesRep_HSB\"],\"showpad/showpad_content_license\":\"partner\",\"given_name\":\"John\",\"family_name\":\"Hezlep\",\"nickname\":\"fortmyers.powerplay\",\"name\":\"John Hezlep\",\"picture\":\"https://s.gravatar.com/avatar/9cd339056d229226c7da9fdcfa245c5b?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fjh.png\",\"updated_at\":\"2025-10-24T23:55:04.126Z\",\"email\":\"fortmyers.powerplay@lenhartelectric.com\",\"email_verified\":true,\"iss\":\"https://id.generac.com/\",\"aud\":\"HvkeUNeH6BUiZ20WqRRO0GCKuiptA3C7\",\"sub\":\"auth0|68598e0bfe1bda008c783ce5\",\"iat\":1761350105,\"exp\":1761386105,\"sid\":\"NcUyImQSZLENDrSwZu1X26PKgLgziZwW\",\"nonce\":\"RVlwMklDLWdFOV9-UTRYcFlVanZEQTc3dkNKbW51cTV0cHprZWh3eHdobllC\"}"
+      "value": "{\"https://powerplay.generac.com/app/powerplayroles\":[\"PP_Admin_HSB\",\"PP_SalesRep_HSB\"],\"showpad/showpad_content_license\":\"partner\",\"given_name\":\"John\",\"family_name\":\"Hezlep\",\"nickname\":\"fortmyers.powerplay\",\"name\":\"John Hezlep\",\"picture\":\"https://s.gravatar.com/avatar/9d29561a821220c11a391fb5a16357f3?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fjh.png\",\"updated_at\":\"2025-10-28T15:38:31.438Z\",\"email\":\"fortmyers.powerplay@gmail.com\",\"email_verified\":true,\"iss\":\"https://id.generac.com/\",\"aud\":\"HvkeUNeH6BUiZ20WqRRO0GCKuiptA3C7\",\"sub\":\"auth0|68ffcb2f37096a9069bacb3f\",\"iat\":1761665912,\"exp\":1761701912,\"sid\":\"Uv9sEqxhkH6fdly_N77XDU_saF4C9FK4\",\"nonce\":\"X3JSMnR3ZXhPMDNMQWx3YVpONGpWSHpkQzB1T1dGUEdQRGRYSFI1c2p5VG9v\"}"
     },
     {
       "key": "refresh_token",
-      "value": "v1.MWPWILkWkdKC4Zm-aQSb6oSjxaR6Q9BXKvYGZqlXHTQkH_Bs85npU_ZQvTa9mRH4N7ZCG3Dmy5vdIMf2rvFM3bE"
+      "value": "v1.MZzojJQZabhROS7ifNpuad6PEhR9dmy3M7yV3Aq5Wt8FHhcVlwHDdW8n9v8k8Zjs6XRRMVu6jOaCmBUZXGPOOoI"
     },
     {
       "key": "id_token_stored_at",
-      "value": "1761350105425"
+      "value": "1761665914315"
     },
     {
       "key": "granted_scopes",
@@ -60,7 +60,7 @@
     },
     {
       "key": "access_token_stored_at",
-      "value": "1761350105424"
+      "value": "1761665914315"
     },
     {
       "key": "DEALER_DETAILS",
@@ -72,11 +72,11 @@
     },
     {
       "key": "FocusDate",
-      "value": "\"2025-10-24T23:55:43.810Z\""
+      "value": "\"2025-10-28T15:38:34.458Z\""
     },
     {
       "key": "imp_user_email",
-      "value": "fortmyers.powerplay@lenhartelectric.com"
+      "value": "fortmyers.powerplay@gmail.com"
     },
     {
       "key": "imp_user_firstname",
@@ -92,7 +92,7 @@
     },
     {
       "key": "id_token",
-      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwczovL3Bvd2VycGxheS5nZW5lcmFjLmNvbS9hcHAvcG93ZXJwbGF5cm9sZXMiOlsiUFBfQWRtaW5fSFNCIiwiUFBfU2FsZXNSZXBfSFNCIl0sInNob3dwYWQvc2hvd3BhZF9jb250ZW50X2xpY2Vuc2UiOiJwYXJ0bmVyIiwiZ2l2ZW5fbmFtZSI6IkpvaG4iLCJmYW1pbHlfbmFtZSI6IkhlemxlcCIsIm5pY2tuYW1lIjoiZm9ydG15ZXJzLnBvd2VycGxheSIsIm5hbWUiOiJKb2huIEhlemxlcCIsInBpY3R1cmUiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci85Y2QzMzkwNTZkMjI5MjI2YzdkYTlmZGNmYTI0NWM1Yj9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZjZG4uYXV0aDAuY29tJTJGYXZhdGFycyUyRmpoLnBuZyIsInVwZGF0ZWRfYXQiOiIyMDI1LTEwLTI0VDIzOjU1OjA0LjEyNloiLCJlbWFpbCI6ImZvcnRteWVycy5wb3dlcnBsYXlAbGVuaGFydGVsZWN0cmljLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczovL2lkLmdlbmVyYWMuY29tLyIsImF1ZCI6Ikh2a2VVTmVINkJVaVoyMFdxUlJPMEdDS3VpcHRBM0M3Iiwic3ViIjoiYXV0aDB8Njg1OThlMGJmZTFiZGEwMDhjNzgzY2U1IiwiaWF0IjoxNzYxMzUwMTA1LCJleHAiOjE3NjEzODYxMDUsInNpZCI6Ik5jVXlJbVFTWkxFTkRyU3dadTFYMjZQS2dMZ3ppWndXIiwibm9uY2UiOiJSVmx3TWtsRExXZEZPVjktVVRSWWNGbFZhblpFUVRjM2RrTktiVzUxY1RWMGNIcHJaV2gzZUhkb2JsbEMifQ.JXEpMs0NKHbO1-SGoA0_slclOkVzjO9C9fqrW7IM-06SQPn_2jNKpnRWTcOg9I1uhwEP2b01XVP8_wBYDHm4UjM4hjgOIBxqkdkR5fHLoHSKWLVTJXb-2gX0gd5rYCAB8-fq2vM2eYRVEhbXkacigVziwpDW7uNgsma-j-h1PTvJl62Rt865NsqNK-lCLR7utvHwRmF5rurxsdHjrw1Bm7g5XAQOKO2jchgKBDnXdvCL-RpTj8JayAtLhrnsmjhehdgngUbKifBhKlEqVgBNL2_ZdC5Lg_pZ8llYpNdAT6RaGtOa1sRvT0hVKjllQJI4FIbX2caPzigM3IF2mFjhDg"
+      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwczovL3Bvd2VycGxheS5nZW5lcmFjLmNvbS9hcHAvcG93ZXJwbGF5cm9sZXMiOlsiUFBfQWRtaW5fSFNCIiwiUFBfU2FsZXNSZXBfSFNCIl0sInNob3dwYWQvc2hvd3BhZF9jb250ZW50X2xpY2Vuc2UiOiJwYXJ0bmVyIiwiZ2l2ZW5fbmFtZSI6IkpvaG4iLCJmYW1pbHlfbmFtZSI6IkhlemxlcCIsIm5pY2tuYW1lIjoiZm9ydG15ZXJzLnBvd2VycGxheSIsIm5hbWUiOiJKb2huIEhlemxlcCIsInBpY3R1cmUiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci85ZDI5NTYxYTgyMTIyMGMxMWEzOTFmYjVhMTYzNTdmMz9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZjZG4uYXV0aDAuY29tJTJGYXZhdGFycyUyRmpoLnBuZyIsInVwZGF0ZWRfYXQiOiIyMDI1LTEwLTI4VDE1OjM4OjMxLjQzOFoiLCJlbWFpbCI6ImZvcnRteWVycy5wb3dlcnBsYXlAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImlzcyI6Imh0dHBzOi8vaWQuZ2VuZXJhYy5jb20vIiwiYXVkIjoiSHZrZVVOZUg2QlVpWjIwV3FSUk8wR0NLdWlwdEEzQzciLCJzdWIiOiJhdXRoMHw2OGZmY2IyZjM3MDk2YTkwNjliYWNiM2YiLCJpYXQiOjE3NjE2NjU5MTIsImV4cCI6MTc2MTcwMTkxMiwic2lkIjoiVXY5c0VxeGhrSDZmZGx5X043N1hEVV9zYUY0QzlGSzQiLCJub25jZSI6IlgzSlNNblIzWlhoUE1ETk1RV3gzWVZwT05HcFdTSHBrUXpCMVQxZEdVRWRRUkdSWVNGSTFjMnA1Vkc5diJ9.qnpuVw6huRfijNN82VeAYEw-GWig_hlgPiurDFyN1r0bt8bDLo0SQpId7yyAmYWtj0X-cq-3bOnH76dRpbt7mYLTCrTmK597XKEtJ_i-44_Xe2mKboSeXzvnLiHWRIb2dhCKSMt2Tfe4h8qYh44vf-eEpWLILZXedKjQVUGoZgXPt6Oqp6qOwXzT4KinfXz59gZBhdpHXMidf3D506nB6tcBFwq8t7ue0_0_rFEorZrlfwlZg9wTGve99mR7ghwruQJxn8FIf3y63GQK-owIuii4haXYI9qk8TFZ7ii9I6fHJTi6mWzF6FI4ywM743y9pFo8MVaRHSJnvjss32E_uQ"
     },
     {
       "key": "imp_user_lastname",
@@ -100,15 +100,15 @@
     },
     {
       "key": "access_token",
-      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiUFBfQWRtaW5fSFNCIiwiUFBfU2FsZXNSZXBfSFNCIl0sImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJKb2huIEhlemxlcCIsImh0dHBzOi8vcG93ZXJwbGF5LmdlbmVyYWMuY29tL3BwMy9Dcm1EZWFsZXJJZCI6IjAwMDEwMjk3NDYiLCJpc3MiOiJodHRwczovL2lkLmdlbmVyYWMuY29tLyIsInN1YiI6ImF1dGgwfDY4NTk4ZTBiZmUxYmRhMDA4Yzc4M2NlNSIsImF1ZCI6WyJodHRwOi8vcG93ZXJwbGF5LmdlbmVyYWMuY29tLyIsImh0dHBzOi8vcHJvZC1nZW5lcmFjLnVzLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3NjEzNTAxMDUsImV4cCI6MTc2MTQzNjUwNSwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCB3cml0ZTpwb3dlcnBsYXkuc2VydmVyLmFwaSByZWFkOnBvd2VycGxheS5zZXJ2ZXIuYXBpIHJlYWQ6bGVhZC5wb29sLmFwaSB3cml0ZTpsZWFkLnBvb2wuYXBpIG9mZmxpbmVfYWNjZXNzIiwiYXpwIjoiSHZrZVVOZUg2QlVpWjIwV3FSUk8wR0NLdWlwdEEzQzciLCJwZXJtaXNzaW9ucyI6WyJyZWFkOmNyb25vZnkuYXBpIiwicmVhZDpsZWFkLnBvb2wuYXBpIiwicmVhZDpwb3dlcnBsYXkuc2VydmVyLmFwaSIsInJlYWQ6cmVwb3J0aW5nLnBwMy5hcGkiLCJ3cml0ZTpjcm9ub2Z5LmFwaSIsIndyaXRlOmxlYWQucG9vbC5hcGkiLCJ3cml0ZTpwb3dlcnBsYXkuc2VydmVyLmFwaSIsIndyaXRlOnJlcG9ydGluZy5wcDMuYXBpIl19.aghL0sQqxJyKrt68W9NwWvQsmeepAP3NpVqOAvwxFfmPB7CWuG2ShbtAXNH9LOGORjMKIzCV75axyIPSJhiiJYA0e9NyepfpeYAGxKN8SJpP9YaOrhPov8wC_4Ph-a9QZun3lfjilQGFUWiSsTH22mcgf8BLTrV0pDwaP-VxE9d4tgZNA3hVpZDxEHNVqptBOqhC2H2MyMSdxD5MRIswA9Cx40nIe6jahjDSnREI86kFwqRFBDgUQOEJBy4FnoUIA5EV3yk4NsAos5X2ypTH4Zec5NIO2dsS2dacOh9a8WvkY2E-Pvfy01kQJorlsx-XEwsomoaD9pFBgcMmtMhAUA"
+      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiUFBfQWRtaW5fSFNCIiwiUFBfU2FsZXNSZXBfSFNCIl0sImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJKb2huIEhlemxlcCIsImh0dHBzOi8vcG93ZXJwbGF5LmdlbmVyYWMuY29tL3BwMy9Dcm1EZWFsZXJJZCI6IjAwMDEwMjk3NDYiLCJpc3MiOiJodHRwczovL2lkLmdlbmVyYWMuY29tLyIsInN1YiI6ImF1dGgwfDY4ZmZjYjJmMzcwOTZhOTA2OWJhY2IzZiIsImF1ZCI6WyJodHRwOi8vcG93ZXJwbGF5LmdlbmVyYWMuY29tLyIsImh0dHBzOi8vcHJvZC1nZW5lcmFjLnVzLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3NjE2NjU5MTIsImV4cCI6MTc2MTc1MjMxMiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCB3cml0ZTpwb3dlcnBsYXkuc2VydmVyLmFwaSByZWFkOnBvd2VycGxheS5zZXJ2ZXIuYXBpIHJlYWQ6bGVhZC5wb29sLmFwaSB3cml0ZTpsZWFkLnBvb2wuYXBpIG9mZmxpbmVfYWNjZXNzIiwiYXpwIjoiSHZrZVVOZUg2QlVpWjIwV3FSUk8wR0NLdWlwdEEzQzciLCJwZXJtaXNzaW9ucyI6WyJyZWFkOmNyb25vZnkuYXBpIiwicmVhZDpsZWFkLnBvb2wuYXBpIiwicmVhZDpwb3dlcnBsYXkuc2VydmVyLmFwaSIsInJlYWQ6cmVwb3J0aW5nLnBwMy5hcGkiLCJ3cml0ZTpjcm9ub2Z5LmFwaSIsIndyaXRlOmxlYWQucG9vbC5hcGkiLCJ3cml0ZTpwb3dlcnBsYXkuc2VydmVyLmFwaSIsIndyaXRlOnJlcG9ydGluZy5wcDMuYXBpIl19.t0xw8m61iMt4eT6uawDDz9bYmZ_638GBX93tyOZzdyyUgX-LAdEeeSLIzragNiyq3DBSxFkUQMVuLwGMW47TSN2f12aguUO7Om2TbY_qxA_ZI3ya-lZbHtPAlUOT9kCin6iII8groZSlSRoQqmEn359peJ-PEfGop5etteI4GKqYuQ1zLmIIU7yfIlnP201daEGlfxe2p0HLQwtAnD7oj3NVjc0L1_qdRP42vIP_CHLts15eFVxwIaCjC25U19unqQE0fvbWoDp4SDi6qZ3FxXUFxWe_9_25QarfUkH_G27sCpoN4UKBiSmsQd1z5y1gicAQAzkycHX5ddslT5cDAw"
     },
     {
       "key": "crmSalesRepId",
-      "value": "0052726653"
+      "value": "0052737411"
     },
     {
       "key": "expires_at",
-      "value": "1761436505425"
+      "value": "1761752314315"
     },
     {
       "key": "FilterData",

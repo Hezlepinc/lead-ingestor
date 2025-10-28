@@ -16,15 +16,15 @@
     },
     {
       "key": "id_token_expires_at",
-      "value": "1761388014000"
+      "value": "1761702179000"
     },
     {
       "key": "imp_user_roles",
-      "value": "[\"PP_Admin_HSB\",\"PP_SalesRep_HSB\"]"
+      "value": "[\"PP_SalesRep_HSB\",\"PP_Admin_HSB\"]"
     },
     {
       "key": "nonce",
-      "value": "YnNMOFlhNUkzdEV4ektfX3dyR3RLWV96Y0pfaWlBeG5nak9rY21SZ0R0aVVJ"
+      "value": "aFRDRVI2c1Q4TXBpZmQxemRBWkVHWXVicnVUb25YS081M1ZpUnNIRlV4clIw"
     },
     {
       "key": "imp_user_powerplay_lite",
@@ -32,23 +32,23 @@
     },
     {
       "key": "PKCE_verifier",
-      "value": "a2JqQXdJWFllR2YtaHRvbTBHMVZNNHguaVY5d3NybkhIMTdQLlY0QkpzVDlR"
+      "value": "SWtuUHB5RE9mbUVyTjZOOF81ejcwbkFtNEFZV2FjSTA0eGFXYnV3MUVvZG9m"
     },
     {
       "key": "userSalesRepId",
-      "value": "21960"
+      "value": "22197"
     },
     {
       "key": "id_token_claims_obj",
-      "value": "{\"https://powerplay.generac.com/app/powerplayroles\":[\"PP_Admin_HSB\",\"PP_SalesRep_HSB\"],\"showpad/showpad_content_license\":\"partner\",\"given_name\":\"Anthony\",\"family_name\":\"Baumeister\",\"nickname\":\"dfwgenerators\",\"name\":\"Anthony Baumeister\",\"picture\":\"https://s.gravatar.com/avatar/be061fe1910babe533263d5b642d1b47?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fab.png\",\"updated_at\":\"2025-10-25T00:00:40.735Z\",\"email\":\"dfwgenerators@in-charge-electric.com\",\"email_verified\":true,\"iss\":\"https://id.generac.com/\",\"aud\":\"HvkeUNeH6BUiZ20WqRRO0GCKuiptA3C7\",\"sub\":\"auth0|6568988654dd8c7552da254d\",\"iat\":1761352014,\"exp\":1761388014,\"sid\":\"YIX-w28S21kRByRBku0SKM3gTLHCM5KV\",\"nonce\":\"YnNMOFlhNUkzdEV4ektfX3dyR3RLWV96Y0pfaWlBeG5nak9rY21SZ0R0aVVJ\"}"
+      "value": "{\"https://powerplay.generac.com/app/powerplayroles\":[\"PP_Admin_HSB\",\"PP_SalesRep_HSB\"],\"showpad/showpad_content_license\":\"partner\",\"given_name\":\"Adrian\",\"family_name\":\"Nelson\",\"nickname\":\"adriannelson\",\"name\":\"Adrian Nelson\",\"picture\":\"https://s.gravatar.com/avatar/7de3626ebe5a51572d1b4e9dcf2a5d2f?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fan.png\",\"updated_at\":\"2025-10-28T15:42:58.233Z\",\"email\":\"adriannelson@in-charge-electric.com\",\"email_verified\":true,\"iss\":\"https://id.generac.com/\",\"aud\":\"HvkeUNeH6BUiZ20WqRRO0GCKuiptA3C7\",\"sub\":\"auth0|64af04c92788394a8faeb647\",\"iat\":1761666179,\"exp\":1761702179,\"sid\":\"_JeER8kKWTUk6Ij_L4Sto_Owvua7BTwc\",\"nonce\":\"aFRDRVI2c1Q4TXBpZmQxemRBWkVHWXVicnVUb25YS081M1ZpUnNIRlV4clIw\"}"
     },
     {
       "key": "refresh_token",
-      "value": "v1.MUD4Ecgrwnj5zf7KuFau9n3pO1U7vKbm0WHFtcDlT0yibJuDogToQPoPnEf-S7rpx2Xb2JVSPoIpwrCaL3OZ0-A"
+      "value": "v1.McIZ-lJANPkEYS_6_BdsMbp0u4ecPa-4aBNzsOVZlco3n38DVmLNZ-B4uNiUdN7_CZ2RqyNRZkGK9iHEb1Lc2C8"
     },
     {
       "key": "id_token_stored_at",
-      "value": "1761352014743"
+      "value": "1761666181449"
     },
     {
       "key": "granted_scopes",
@@ -60,7 +60,7 @@
     },
     {
       "key": "access_token_stored_at",
-      "value": "1761352014743"
+      "value": "1761666181448"
     },
     {
       "key": "DEALER_DETAILS",
@@ -72,15 +72,15 @@
     },
     {
       "key": "FocusDate",
-      "value": "\"2025-10-25T00:26:54.849Z\""
+      "value": "\"2025-10-28T15:43:01.598Z\""
     },
     {
       "key": "imp_user_email",
-      "value": "dfwgenerators@in-charge-electric.com"
+      "value": "adriannelson@in-charge-electric.com"
     },
     {
       "key": "imp_user_firstname",
-      "value": "Anthony"
+      "value": "Adrian"
     },
     {
       "key": "PP3_DISMISSED_ALERTS",
@@ -92,27 +92,23 @@
     },
     {
       "key": "id_token",
-      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwczovL3Bvd2VycGxheS5nZW5lcmFjLmNvbS9hcHAvcG93ZXJwbGF5cm9sZXMiOlsiUFBfQWRtaW5fSFNCIiwiUFBfU2FsZXNSZXBfSFNCIl0sInNob3dwYWQvc2hvd3BhZF9jb250ZW50X2xpY2Vuc2UiOiJwYXJ0bmVyIiwiZ2l2ZW5fbmFtZSI6IkFudGhvbnkiLCJmYW1pbHlfbmFtZSI6IkJhdW1laXN0ZXIiLCJuaWNrbmFtZSI6ImRmd2dlbmVyYXRvcnMiLCJuYW1lIjoiQW50aG9ueSBCYXVtZWlzdGVyIiwicGljdHVyZSI6Imh0dHBzOi8vcy5ncmF2YXRhci5jb20vYXZhdGFyL2JlMDYxZmUxOTEwYmFiZTUzMzI2M2Q1YjY0MmQxYjQ3P3M9NDgwJnI9cGcmZD1odHRwcyUzQSUyRiUyRmNkbi5hdXRoMC5jb20lMkZhdmF0YXJzJTJGYWIucG5nIiwidXBkYXRlZF9hdCI6IjIwMjUtMTAtMjVUMDA6MDA6NDAuNzM1WiIsImVtYWlsIjoiZGZ3Z2VuZXJhdG9yc0Bpbi1jaGFyZ2UtZWxlY3RyaWMuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImlzcyI6Imh0dHBzOi8vaWQuZ2VuZXJhYy5jb20vIiwiYXVkIjoiSHZrZVVOZUg2QlVpWjIwV3FSUk8wR0NLdWlwdEEzQzciLCJzdWIiOiJhdXRoMHw2NTY4OTg4NjU0ZGQ4Yzc1NTJkYTI1NGQiLCJpYXQiOjE3NjEzNTIwMTQsImV4cCI6MTc2MTM4ODAxNCwic2lkIjoiWUlYLXcyOFMyMWtSQnlSQmt1MFNLTTNnVExIQ001S1YiLCJub25jZSI6IlluTk1PRmxoTlVremRFVjRla3RmWDNkeVIzUkxXVjk2WTBwZmFXbEJlRzVuYWs5clkyMVNaMFIwYVZWSiJ9.fSD4rXnizOfRqscT-bzaFM8cqCWjIBN7KZiRKNHOeNveusNoYW8sO4-2qFwoZpfeqcyFm78m22-TOo6WvD3Y3jS6DUmD-2bSOlzIiPuByA-VuYSTLkmwoeWvytkctFc2tB6fZjnoaGcBHMOW_BZkbfoxKTWqQp3aGs4XSpHmRxciTpbYvzMscbqaKQJznLDBP3i8qUSELakhKBzJEU6Hpnyag_PMKlacaC_g31bG8JMoCSbpAJoRfySqJno0wLv-KD-2XuHEFzXZkgnf4kb8vnnyhzN0Bvep6N0_wmAmLqpKBGpvDmsyiAV8qoisE_CwGrk8goc5-1ut48oZTdqxQA"
+      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwczovL3Bvd2VycGxheS5nZW5lcmFjLmNvbS9hcHAvcG93ZXJwbGF5cm9sZXMiOlsiUFBfQWRtaW5fSFNCIiwiUFBfU2FsZXNSZXBfSFNCIl0sInNob3dwYWQvc2hvd3BhZF9jb250ZW50X2xpY2Vuc2UiOiJwYXJ0bmVyIiwiZ2l2ZW5fbmFtZSI6IkFkcmlhbiIsImZhbWlseV9uYW1lIjoiTmVsc29uIiwibmlja25hbWUiOiJhZHJpYW5uZWxzb24iLCJuYW1lIjoiQWRyaWFuIE5lbHNvbiIsInBpY3R1cmUiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci83ZGUzNjI2ZWJlNWE1MTU3MmQxYjRlOWRjZjJhNWQyZj9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZjZG4uYXV0aDAuY29tJTJGYXZhdGFycyUyRmFuLnBuZyIsInVwZGF0ZWRfYXQiOiIyMDI1LTEwLTI4VDE1OjQyOjU4LjIzM1oiLCJlbWFpbCI6ImFkcmlhbm5lbHNvbkBpbi1jaGFyZ2UtZWxlY3RyaWMuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImlzcyI6Imh0dHBzOi8vaWQuZ2VuZXJhYy5jb20vIiwiYXVkIjoiSHZrZVVOZUg2QlVpWjIwV3FSUk8wR0NLdWlwdEEzQzciLCJzdWIiOiJhdXRoMHw2NGFmMDRjOTI3ODgzOTRhOGZhZWI2NDciLCJpYXQiOjE3NjE2NjYxNzksImV4cCI6MTc2MTcwMjE3OSwic2lkIjoiX0plRVI4a0tXVFVrNklqX0w0U3RvX093dnVhN0JUd2MiLCJub25jZSI6ImFGUkRSVkkyYzFRNFRYQnBabVF4ZW1SQldrVkhXWFZpY25WVWIyNVlTMDgxTTFacFVuTklSbFY0Y2xJdyJ9.NOcZ_yqQxSlJF86P7lZvn7C8104waX272sB0XhmYZ1LwpyRWM0pSg4TwIpvtCWtJ7h9y35qAeB_YDpWIuPgCBIF6T3lkZCID-XHcMqGfWEbut2IRPusEqWVvlhgIj8fMcwYIKwo_ef9WmyuFonWG2RjMtJHJjPVI8zWpeXHTvHHwOiRTBa23PfBv8jUCVQhyry_nPrg-CDGGIfqiCMHTUqThaTHMNDGR-TXB1c5uYCUwHu_ZmesTMkkbKJlKmc5eaByTdSfwY24jfanNQL5U5hC3Ym5bKvNvQ2VRcqH8ECNLdUDShg2HyJlSscxLT6sQs9eD7lXXweECGbjZnASDXg"
     },
     {
       "key": "imp_user_lastname",
-      "value": "Baumeister"
+      "value": "Nelson"
     },
     {
       "key": "access_token",
-      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiUFBfQWRtaW5fSFNCIiwiUFBfU2FsZXNSZXBfSFNCIl0sImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJBbnRob255IEJhdW1laXN0ZXIiLCJodHRwczovL3Bvd2VycGxheS5nZW5lcmFjLmNvbS9wcDMvQ3JtRGVhbGVySWQiOiIwMDExMjI4MTY3IiwiaXNzIjoiaHR0cHM6Ly9pZC5nZW5lcmFjLmNvbS8iLCJzdWIiOiJhdXRoMHw2NTY4OTg4NjU0ZGQ4Yzc1NTJkYTI1NGQiLCJhdWQiOlsiaHR0cDovL3Bvd2VycGxheS5nZW5lcmFjLmNvbS8iLCJodHRwczovL3Byb2QtZ2VuZXJhYy51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzYxMzUyMDE0LCJleHAiOjE3NjE0Mzg0MTQsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgd3JpdGU6cG93ZXJwbGF5LnNlcnZlci5hcGkgcmVhZDpwb3dlcnBsYXkuc2VydmVyLmFwaSByZWFkOmxlYWQucG9vbC5hcGkgd3JpdGU6bGVhZC5wb29sLmFwaSBvZmZsaW5lX2FjY2VzcyIsImF6cCI6Ikh2a2VVTmVINkJVaVoyMFdxUlJPMEdDS3VpcHRBM0M3IiwicGVybWlzc2lvbnMiOlsicmVhZDpjcm9ub2Z5LmFwaSIsInJlYWQ6bGVhZC5wb29sLmFwaSIsInJlYWQ6cG93ZXJwbGF5LnNlcnZlci5hcGkiLCJyZWFkOnJlcG9ydGluZy5wcDMuYXBpIiwid3JpdGU6Y3Jvbm9meS5hcGkiLCJ3cml0ZTpsZWFkLnBvb2wuYXBpIiwid3JpdGU6cG93ZXJwbGF5LnNlcnZlci5hcGkiLCJ3cml0ZTpyZXBvcnRpbmcucHAzLmFwaSJdfQ.GQa0AEj2LgITDVMsjgMZHgach8EVQNCIqkx49ckEM1bx_1_PtFSkGpnvzzOEQqrJNvD1RhaGvTzAbL50dpwXTsK7VCbx_anbd2tdWo3QDfQDXB1f3GOv-UP8Uu_n-001MGSsfe5IeDemXC4hJJi0F3WcLNU493AwiFINKPVB9Kffn9Sn5XR-nE3kJrgDL1OXqcPMYSUl1v2isBOcJQ8RbpX-E5gR9nFL45TjjjLgX2joW3S8JtNV3DOAzdb5Wrh2jHfamvEngN1ZGbY3BCtgj-nJSj67454U3Tf5QVALqCh2j4oeUu0RiQwJIfKL_n_BetWDSG6kvA4VoUyJLfTKRA"
+      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBKcWtnUkxSaTkxWHFwWmJmNW9uVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiUFBfQWRtaW5fSFNCIiwiUFBfU2FsZXNSZXBfSFNCIl0sImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJBZHJpYW4gTmVsc29uIiwiaHR0cHM6Ly9wb3dlcnBsYXkuZ2VuZXJhYy5jb20vcHAzL0NybURlYWxlcklkIjoiMDAxMTIyODE2NyIsImlzcyI6Imh0dHBzOi8vaWQuZ2VuZXJhYy5jb20vIiwic3ViIjoiYXV0aDB8NjRhZjA0YzkyNzg4Mzk0YThmYWViNjQ3IiwiYXVkIjpbImh0dHA6Ly9wb3dlcnBsYXkuZ2VuZXJhYy5jb20vIiwiaHR0cHM6Ly9wcm9kLWdlbmVyYWMudXMuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTc2MTY2NjE3OSwiZXhwIjoxNzYxNzUyNTc5LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIHdyaXRlOnBvd2VycGxheS5zZXJ2ZXIuYXBpIHJlYWQ6cG93ZXJwbGF5LnNlcnZlci5hcGkgcmVhZDpsZWFkLnBvb2wuYXBpIHdyaXRlOmxlYWQucG9vbC5hcGkgb2ZmbGluZV9hY2Nlc3MiLCJhenAiOiJIdmtlVU5lSDZCVWlaMjBXcVJSTzBHQ0t1aXB0QTNDNyIsInBlcm1pc3Npb25zIjpbInJlYWQ6Y3Jvbm9meS5hcGkiLCJyZWFkOmxlYWQucG9vbC5hcGkiLCJyZWFkOnBvd2VycGxheS5zZXJ2ZXIuYXBpIiwicmVhZDpyZXBvcnRpbmcucHAzLmFwaSIsIndyaXRlOmNyb25vZnkuYXBpIiwid3JpdGU6bGVhZC5wb29sLmFwaSIsIndyaXRlOnBvd2VycGxheS5zZXJ2ZXIuYXBpIiwid3JpdGU6cmVwb3J0aW5nLnBwMy5hcGkiXX0.P316slLT9XWlnFfO77dtRr_Ig0DzuX0096cqDW4pVNg_O_htrIGzXma4iqPzlZ7-2XvnL9zgL90CGX7MaRgL5JzBQbaN1dg7C2jVyPRTpIqQmZXT8RnwrcyJc2U5uUQGokSPMgIEckkfXcHzOuIq7NQBX5sveMp1PfjNg7lvFye7FERfCW4DpVJ4C18FNhIe_rmG8RTgfzXAJXDQWQqVevb2p6F_CLQgUxgeLDybyd9HvL8LMwrxxKHCia5YXnx5BFsZg0XEeXDPtmKVp7WqvKzQRexdSCe1gRf5f5R3xbl_PL963kwYIgnKbVcPlkpAE1T9XcsfrAeUmz82kd1NbQ"
     },
     {
       "key": "crmSalesRepId",
-      "value": "0052653535"
+      "value": "0052643167"
     },
     {
       "key": "expires_at",
-      "value": "1761438414743"
-    },
-    {
-      "key": "FilterData",
-      "value": "{\"salesRepId\":null,\"salesStageId\":null,\"coreProductId\":null,\"sourceId\":null,\"startDate\":null,\"endDate\":null,\"dateRangeSelection\":\"1\"}"
+      "value": "1761752581448"
     }
   ]
 }
