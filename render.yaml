@@ -24,3 +24,16 @@ services:
         sync: false
       - key: SCHEDULER_LINK
         sync: false
+  - type: worker
+    name: fast-claim-worker
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r python/requirements.txt
+    startCommand: python python/fast_claim_worker.py
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: POWERPLAY_API_ROOT
+        value: https://powerplay.generac.com/app/powerplay3-server/api
+      - key: MAX_PARALLEL_CLAIMS
+        value: "5"
