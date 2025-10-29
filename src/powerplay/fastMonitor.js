@@ -3,6 +3,8 @@ import { log } from "../utils/logger.js";
 import { Auth } from "../models/Auth.js";
 import { claimOpportunity } from "./claimOpportunity.js";
 import { TTLSet } from "../utils/ttlCache.js";
+import fs from "fs";
+import path from "path";
 
 /**
  * Region config example:
@@ -31,14 +33,34 @@ export async function startFastMonitors({
   const regionClients = new Map();
   const seenByRegion = new Map(); // regionName -> TTLSet
 
+  // Small helper to slugify region names to cookie filenames
+  const slugify = (s) => s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
   // Build each region monitor in parallel
   await Promise.all(regions.map(async (regionCfg) => {
     const apiRoot = regionCfg.apiRoot.replace(/\/$/, "");
     const auth = await Auth.findOne({ region: regionCfg.name }).lean().catch(() => null);
 
+    // Derive cookie header from cookie file if not provided
+    let cookieHeader = regionCfg.cookieHeader || "";
+    let cookiePath = regionCfg.cookiePath || "";
+    try {
+      if (!cookieHeader) {
+        const baseDir = process.env.COOKIES_PATH || path.join(process.cwd(), "cookies");
+        const candidate = cookiePath || path.join(baseDir, `${slugify(regionCfg.name)}.json`);
+        if (fs.existsSync(candidate)) {
+          cookiePath = candidate;
+          const cookies = JSON.parse(fs.readFileSync(candidate, "utf8"));
+          if (Array.isArray(cookies) && cookies.length) {
+            cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+          }
+        }
+      }
+    } catch {}
+
     const extraHTTPHeaders = {
       accept: "application/json, text/plain, */*",
-      ...(regionCfg.cookieHeader ? { cookie: regionCfg.cookieHeader } : {}),
+      ...(cookieHeader ? { cookie: cookieHeader } : {}),
       ...(auth?.jwt ? { authorization: `Bearer ${auth.jwt}` } : {}),
       ...(auth?.xsrf ? { "x-xsrf-token": auth.xsrf } : {}),
     };
@@ -52,6 +74,9 @@ export async function startFastMonitors({
 
     regionClients.set(regionCfg.name, ctx);
     seenByRegion.set(regionCfg.name, new TTLSet());
+    // Persist inferred cookiePath back onto regionCfg for claims
+    regionCfg.cookieHeader = cookieHeader;
+    regionCfg.cookiePath = cookiePath;
   }));
 
   // Start independent timers (no round-robin)
@@ -92,6 +117,13 @@ export async function startFastMonitors({
 
           const createdAt = new Date(row.dateCreated).getTime();
           const ageMs = Date.now() - createdAt;
+
+          // Only attempt unclaimed items (common code: E0004 indicates unclaimed)
+          const statusText = String(row.status || row.Status || "").trim().toUpperCase();
+          const isUnclaimed = !statusText || statusText === "E0004";
+          if (!isUnclaimed) {
+            continue;
+          }
 
           // If we are already too late, we'll still try once, but log it.
           if (ageMs > 5000) {

@@ -24,7 +24,7 @@ function isTargetApi(url) {
 //
 // === Core Monitor ===
 //
-export async function startPowerPlayMonitor({ region, url, cookiePath }) {
+export async function startPowerPlayMonitor({ region, url, cookiePath, onLead }) {
   const baseUrl = url || process.env.POWERPLAY_URLS?.split(",")[0];
   if (!baseUrl) throw new Error("Missing POWERPLAY_URLS env var");
 
@@ -47,6 +47,28 @@ export async function startPowerPlayMonitor({ region, url, cookiePath }) {
     log(`⚠️ No cookie file found for ${region}`);
   }
 
+  // If we have a saved Bearer token, inject it for both browser JS and network layer
+  try {
+    const base = path.basename(cookiePath, ".json");
+    const dir = path.dirname(cookiePath);
+    const tokenPath = path.join(dir, `${base}-token.txt`);
+    if (fs.existsSync(tokenPath)) {
+      const bearer = (fs.readFileSync(tokenPath, "utf8").trim() || "");
+      if (bearer) {
+        // Set default Authorization header for all requests from this context
+        await context.setExtraHTTPHeaders({ Authorization: bearer });
+      }
+      // Make token available to app code that reads from localStorage
+      const token = bearer.replace(/^Bearer\s+/i, "");
+      const storageState = { origins: [{ origin: "https://powerplay.generac.com", localStorage: [{ name: "token", value: token }] }] };
+      try {
+        await context.addInitScript(({ t }) => {
+          try { localStorage.setItem("token", t); } catch {}
+        }, { t: token });
+      } catch {}
+    }
+  } catch {}
+
   const page = await context.newPage();
 
   // === token refresher ===
@@ -54,7 +76,19 @@ export async function startPowerPlayMonitor({ region, url, cookiePath }) {
     try {
       const cookies = await context.cookies();
       const xsrf = cookies.find((c) => c.name === "XSRF-TOKEN")?.value || null;
-      const jwt = await page.evaluate(() => localStorage.getItem("token") || null);
+      let jwt = await page.evaluate(() => localStorage.getItem("token") || null);
+      // Fallback: read saved Bearer token from token file if localStorage token is missing
+      if (!jwt && cookiePath) {
+        try {
+          const base = path.basename(cookiePath, ".json");
+          const dir = path.dirname(cookiePath);
+          const tokenPath = path.join(dir, `${base}-token.txt`);
+          if (fs.existsSync(tokenPath)) {
+            const raw = (fs.readFileSync(tokenPath, "utf8").trim() || "");
+            if (raw) jwt = raw.replace(/^Bearer\s+/i, "");
+          }
+        } catch {}
+      }
       if (xsrf || jwt) {
         await Auth.updateOne(
           { region },
@@ -62,6 +96,12 @@ export async function startPowerPlayMonitor({ region, url, cookiePath }) {
           { upsert: true }
         );
         log(`🔑 ${region}: tokens refreshed (${tag})`);
+        // Also update network headers to ensure subsequent polls succeed
+        if (jwt) {
+          try {
+            await context.setExtraHTTPHeaders({ Authorization: `Bearer ${jwt}` });
+          } catch {}
+        }
       }
     } catch (e) {
       log(`⚠️ ${region}: token refresh failed ${e.message}`);
@@ -117,6 +157,21 @@ export async function startPowerPlayMonitor({ region, url, cookiePath }) {
               { $set: { region, raw: item, updatedAt: new Date() } },
               { upsert: true }
             );
+          }
+
+          // optional callback for external handling (e.g., saving to Leads collection)
+          if (typeof onLead === "function") {
+            try {
+              await onLead({
+                type: "opportunity",
+                id,
+                region,
+                source: "powerplay",
+                raw: item,
+              });
+            } catch (e) {
+              log(`⚠️ onLead callback failed for ${region}:${id} ${e.message}`);
+            }
           }
 
           // fire auto-claim

@@ -1,6 +1,8 @@
 import { log } from "../utils/logger.js";
 import { Auth } from "../models/Auth.js";
 import { Claim } from "../models/Claim.js";
+import { Event } from "../models/Event.js";
+import { Lock } from "../models/Lock.js";
 import fs from "fs";
 import path from "path";
 
@@ -21,6 +23,25 @@ export async function claimOpportunity({
 }) {
   const started = Date.now();
   try {
+    // Acquire per-(region,id) lock for 6 hours to avoid duplicate attempts across workers
+    const now = new Date();
+    const lockId = `claim:${region}:${id}`;
+    const lockUntil = new Date(Date.now() + 6 * 60 * 60 * 1000);
+    const lockRes = await Lock.updateOne(
+      {
+        _id: lockId,
+        $or: [
+          { expiresAt: { $lte: now } },
+          { expiresAt: { $exists: false } },
+        ],
+      },
+      { $set: { expiresAt: lockUntil } },
+      { upsert: true }
+    );
+    if (!lockRes.upsertedCount && !lockRes.modifiedCount) {
+      return { skipped: true, reason: "locked" };
+    }
+
     const auth = await Auth.findOne({ region }).lean();
     if (!auth) {
       log(`⚠️ No auth tokens for ${region}`);
@@ -75,13 +96,30 @@ export async function claimOpportunity({
         try { body = (await res.text?.()) ?? (await res.body?.()).toString?.() ?? ""; } catch {}
         const ms = Date.now() - started;
         log(`⚡ ${region}: claim ${id} → ${status} (${ms} ms)`);
-        await Claim.create({
-          region,
-          opportunityId: String(id),
-          status,
-          latencyMs: ms,
-          responseBody: body,
-        });
+        const snippet = body ? String(body).slice(0, 500) : "";
+        // Idempotent upsert of claim attempt summary
+        await Claim.updateOne(
+          { region, opportunityId: String(id) },
+          {
+            $setOnInsert: { region, opportunityId: String(id), firstAttemptAt: new Date() },
+            $set: { status, latencyMs: ms, responseBody: snippet, lastAttemptAt: new Date(), lastStatus: status },
+            $inc: { attemptCount: 1 },
+          },
+          { upsert: true }
+        );
+        // Instrument event log (short body snippet)
+        try {
+          await Event.create({
+            type: "claim",
+            source: "PowerPlay",
+            region,
+            url: claimUrl,
+            status,
+            payload: { opportunityId: String(id) },
+            body: snippet,
+            timestamp: new Date(),
+          });
+        } catch {}
         // Persist last good path pattern
         try {
           const url = typeof res.url === "function" ? res.url() : claimUrl;
@@ -98,6 +136,18 @@ export async function claimOpportunity({
   } catch (err) {
     const ms = Date.now() - started;
     log(`❌ ${region}: claim ${id} failed ${err.message} (${ms} ms)`);
+    try {
+      await Event.create({
+        type: "claim",
+        source: "PowerPlay",
+        region,
+        url: `${apiRoot.replace(/\/$/, "")}/Opportunity/${id}/Claim`,
+        status: 0,
+        payload: { opportunityId: String(id), error: err.message },
+        body: "",
+        timestamp: new Date(),
+      });
+    } catch {}
     return { error: err, ms };
   }
 }

@@ -2,7 +2,6 @@
 import fs from "fs";
 import path from "path";
 import { chromium } from "playwright";
-import readline from "readline";
 
 // === CONFIGURATION ===
 const loginUrl = "https://powerplay.generac.com/app/";
@@ -11,16 +10,20 @@ const COOKIES_DIR = path.join(process.cwd(), "cookies");
 // Ensure cookies folder exists
 fs.mkdirSync(COOKIES_DIR, { recursive: true });
 
-// Simple prompt helper
-const ask = (question) => {
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  return new Promise((resolve) =>
-    rl.question(question, (ans) => {
-      rl.close();
-      resolve(ans.trim());
-    })
-  );
-};
+// CLI args parsing (supports --region <name> or positional)
+function parseArgs(argv) {
+  const out = { region: process.env.REGION || "" };
+  for (let i = 2; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === "--region" && argv[i + 1]) {
+      out.region = argv[i + 1];
+      i++;
+    } else if (!a.startsWith("--") && !out.region) {
+      out.region = a;
+    }
+  }
+  return out;
+}
 
 (async () => {
   console.log("⚙️  PowerPlay Cookie & Token Saver");
@@ -28,10 +31,9 @@ const ask = (question) => {
   console.log("This script opens a persistent Chrome profile for manual login.\n");
   console.log("➡️  PowerPlay URL:", loginUrl, "\n");
 
-  // Ask region name
-  const regionName = await ask("Enter region name (e.g., central-fl, jacksonville-fl): ");
+  const { region: regionName } = parseArgs(process.argv);
   if (!regionName) {
-    console.error("❌ Region name cannot be empty. Exiting...");
+    console.error("❌ Region name missing. Pass --region <name> or set REGION env.");
     process.exit(1);
   }
 
@@ -62,8 +64,7 @@ const ask = (question) => {
   await page.goto(loginUrl, { waitUntil: "domcontentloaded" });
 
   console.log("\n💬 Please log in manually in the opened browser window.");
-  console.log("   After you see the PowerPlay dashboard, this script will navigate to the Opportunities page automatically.");
-  await ask("Press ENTER once the dashboard has loaded (even if leads aren’t visible)... ");
+  console.log("   The script will automatically detect when the app is loaded and proceed.");
 
   // --- Angular-safe navigation to Opportunities view ---
   console.log("➡️ Navigating to Opportunities page (Angular-safe)...");
@@ -82,15 +83,36 @@ const ask = (question) => {
       await page.click('text=Opportunit', { timeout: 5000 });
     } catch {}
     await page.waitForFunction(
-      () => window.location.hash.includes("opportunit") ||
+      () => window.location.href.includes("/app/") ||
+        window.location.hash.includes("opportunit") ||
         document.querySelector("app-opportunities") ||
         Array.from(document.querySelectorAll("h1,h2,h3,nav,button,a,span")).some(e => e.textContent && e.textContent.toLowerCase().includes("opportunit")),
-      { timeout: 60000 }
+      { timeout: 300000 } // allow up to 5 minutes for manual login
     );
     console.log("✅ Opportunities view is active.");
   } catch (err) {
     console.warn("⚠️ Could not programmatically open Opportunities:", err.message);
   }
+
+  // --- Attempt to read token directly from browser storage and save ---
+  try {
+    const directToken = await page.evaluate(() => {
+      const keys = Object.keys(localStorage);
+      const tokenKey = keys.find(k => k.toLowerCase() === 'token' || /access|id[_-]?token|auth/.test(k.toLowerCase()));
+      let val = '';
+      if (tokenKey) val = localStorage.getItem(tokenKey) || '';
+      if (!val) {
+        const ssKeys = Object.keys(sessionStorage);
+        const ssKey = ssKeys.find(k => k.toLowerCase() === 'token' || /access|id[_-]?token|auth/.test(k.toLowerCase()));
+        if (ssKey) val = sessionStorage.getItem(ssKey) || '';
+      }
+      return val || '';
+    });
+    if (directToken && /^eyJ[A-Za-z0-9_-]+/.test(directToken)) {
+      fs.writeFileSync(tokenFile, `Bearer ${directToken}`);
+      console.log(`🔑 Saved token from localStorage/sessionStorage → ${tokenFile}`);
+    }
+  } catch {}
 
   // --- Detect API / SignalR activity and capture token ---
   console.log("🌐 Waiting for PowerPlay or DealerInsights API activity...");

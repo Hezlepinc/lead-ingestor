@@ -47,11 +47,11 @@ import { log } from "./utils/logger.js";
         }
 
         // Check if this opportunity already exists
-        const existing = await Opportunity.findOne({ powerplayId: id });
+        const existing = await Opportunity.findOne({ opportunityId: id });
         if (existing) {
           // Already seen — just update metadata
           await Opportunity.updateOne(
-            { powerplayId: id },
+            { opportunityId: id },
             {
               $set: {
                 raw: data,
@@ -70,7 +70,7 @@ import { log } from "./utils/logger.js";
           raw: data,
           region: data.region,
           source: data.source || "powerplay",
-          powerplayId: id,
+          opportunityId: id,
           lastSeen: new Date(),
         });
 
