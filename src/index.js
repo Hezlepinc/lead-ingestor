@@ -1,6 +1,7 @@
 import "dotenv/config";
 import path from "path";
 import fs from "fs";
+import { execSync } from "child_process";
 import { connectDB } from "./config/db.js";
 import { Lead } from "./models/Lead.js";
 import { Opportunity } from "./models/Opportunity.js";
@@ -32,6 +33,13 @@ import { log } from "./utils/logger.js";
 
   // --- Connect Mongo ---
   await connectDB();
+
+  // --- Ensure Playwright Chromium is available in runtime (fallback to build step if present)
+  try {
+    execSync("npx playwright install chromium", { stdio: "inherit" });
+  } catch (e) {
+    console.warn("Playwright install skipped:", e.message);
+  }
 
   // ============================================================
   // === Lead & Opportunity Handler (Events Disabled) ============

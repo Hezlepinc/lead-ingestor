@@ -17,6 +17,8 @@
     "probe:pp": "node scripts/probe-powerplay.js"
   },
   "dependencies": {
+    "@microsoft/signalr": "^8.0.6",
+    "axios": "^1.7.7",
     "@sendgrid/mail": "^8.1.0",
     "dotenv": "^16.6.1",
     "mongoose": "^8.7.0",
