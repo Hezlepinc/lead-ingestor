@@ -12,7 +12,8 @@ const regions = [
 ];
 
 const dir = process.env.COOKIES_PATH || '/opt/render/project/src/cookies';
-const loginUrl = 'https://powerplay.generac.com/'; // adjust if your login page differs
+// Generac PowerPlay now redirects to Auth0 login under id.generac.com
+const loginUrl = 'https://powerplay.generac.com/app';
 
 function toSlug(name) {
   return String(name).toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -25,23 +26,24 @@ async function refreshForRegion(region) {
   const page = await context.newPage();
 
   try {
-    await page.goto(loginUrl, { waitUntil: 'networkidle' });
+    await page.goto(loginUrl, { waitUntil: 'domcontentloaded' });
 
-    // Wait for either login form or redirect
+    // Wait for redirect to the Auth0 login page
+    await page.waitForURL('**id.generac.com/u/login/**', { timeout: 20000 }).catch(() => {});
     await page.waitForLoadState('domcontentloaded');
 
-    // Try to detect login fields
-    const userSel = 'input[name="username"], input#username, input[id*="UserName"]';
-    const passSel = 'input[name="password"], input#password, input[id*="Password"]';
-    const submitSel = 'button[type="submit"], input[type="submit"]';
+    // Fill login fields on Auth0 page
+    await page.fill('input[name="username"], input[name="email"]', region.username);
+    await page.click('button[type="submit"], button[name="action"]');
 
-    // Only fill if not already logged in
-    if (await page.locator(userSel).count()) {
-      await page.fill(userSel, region.username);
-      await page.fill(passSel, region.password);
-      await page.click(submitSel);
-      await page.waitForLoadState('networkidle');
-    }
+    // Wait for password field to appear
+    await page.waitForSelector('input[name="password"]', { timeout: 15000 });
+    await page.fill('input[name="password"]', region.password);
+    await page.click('button[type="submit"], button[name="action"]');
+
+    // Wait until redirected back to PowerPlay dashboard
+    await page.waitForURL('**powerplay.generac.com/app**', { timeout: 30000 });
+    await page.waitForLoadState('networkidle');
 
     // Pull token directly from Session Storage
     const idToken = await page.evaluate(() => sessionStorage.getItem('id_token'));
