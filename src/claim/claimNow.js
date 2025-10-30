@@ -1,15 +1,16 @@
 import axios from "axios";
 import { cfg } from "../config.js";
 import { log } from "../logger.js";
-import { getRegionToken } from "../auth/tokenProvider.js";
+import { getTokenForRegion } from "../auth/tokens.js";
 
 export async function claimNow({ region, opportunityId, timeoutMs = 2000 }) {
   const apiRoot = (cfg.powerplayApiRoot || "").replace(/\/$/, "");
   if (!apiRoot) throw new Error("POWERPLAY_API_ROOT not set");
 
-  const { token } = await getRegionToken(region);
+  const raw = await getTokenForRegion(region);
+  const bearer = String(raw).replace(/^Bearer\s+/i, "");
   const headers = {
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${bearer}`,
     Accept: "application/json",
     "Content-Type": "application/json",
   };

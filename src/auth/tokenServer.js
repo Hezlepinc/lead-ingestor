@@ -1,6 +1,6 @@
 import express from "express";
 import { cfg } from "../config.js";
-import { getRegionToken } from "./tokenProvider.js";
+import { getTokenForRegion } from "./tokens.js";
 import { log, err } from "../logger.js";
 
 export function startTokenServer() {
@@ -12,8 +12,10 @@ export function startTokenServer() {
     if (secret !== cfg.tokenServerSecret) return res.status(403).json({ error: "Forbidden" });
 
     try {
-      const { token, exp } = await getRegionToken(region);
-      res.json({ id_token: token, expires_at: exp });
+      const raw = await getTokenForRegion(region);
+      const idToken = String(raw).replace(/^Bearer\s+/i, "");
+      // Expiry unknown for file-based tokens; return null for compatibility
+      res.json({ id_token: idToken, expires_at: null });
     } catch (e) {
       err("Token fetch failed", e);
       res.status(500).json({ error: e.message });
