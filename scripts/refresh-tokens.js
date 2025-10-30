@@ -28,30 +28,41 @@ async function refreshForRegion(region) {
   try {
     await page.goto(loginUrl, { waitUntil: 'domcontentloaded' });
 
-    // --- open PowerPlay, wait for redirect to Auth0 ---
-    await page.waitForURL('**id.generac.com/u/login/**', { timeout: 20000 }).catch(() => {});
-    await page.waitForLoadState('domcontentloaded');
+    // wait for redirect to Auth0 login
+    await page.waitForURL("**id.generac.com/u/login/**", { timeout: 25000 }).catch(() => {});
+    await page.waitForLoadState("domcontentloaded");
 
-    // --- Step 1:  email / username screen ---
+    // fill email
     const emailSel = 'input[name="username"], input[name="email"], input#username';
-    await page.waitForSelector(emailSel, { timeout: 15000 });
+    await page.waitForSelector(emailSel, { timeout: 20000 });
     await page.fill(emailSel, region.username);
 
-    // Auth0 shows a "Next" or "Continue" button after email
-    const nextSel = 'button[type="submit"], button[name="action"], button:has-text("Next"), button:has-text("Continue")';
-    await page.click(nextSel);
+    // Auth0 sometimes has hidden submit buttons; click the visible one only
+    const continueButtons = await page.$$('button[type="submit"], button[name="action"], button:has-text("Continue")');
+    for (const b of continueButtons) {
+      if (await b.isVisible()) {
+        await b.click({ force: true });
+        break;
+      }
+    }
 
-    // --- Step 2:  password screen ---
+    // Wait until password field appears
     const passSel = 'input[name="password"], input#password, input[id*="Password"]';
-    await page.waitForSelector(passSel, { timeout: 20000 });
+    await page.waitForSelector(passSel, { timeout: 25000 });
     await page.fill(passSel, region.password);
 
-    // Click the login / continue button again
-    await page.click(nextSel);
+    // Click visible login/continue button again
+    const loginButtons = await page.$$('button[type="submit"], button[name="action"], button:has-text("Continue"), button:has-text("Log in")');
+    for (const b of loginButtons) {
+      if (await b.isVisible()) {
+        await b.click({ force: true });
+        break;
+      }
+    }
 
-    // --- Wait until redirected back to PowerPlay ---
-    await page.waitForURL('**powerplay.generac.com/app**', { timeout: 30000 });
-    await page.waitForLoadState('networkidle');
+    // Wait until redirected back to PowerPlay dashboard
+    await page.waitForURL("**powerplay.generac.com/app**", { timeout: 40000 });
+    await page.waitForLoadState("networkidle");
 
     // Pull token directly from Session Storage
     const idToken = await page.evaluate(() => sessionStorage.getItem('id_token'));
