@@ -59,6 +59,18 @@ services:
         sync: false
       - key: TOKEN_SERVICE_SECRET
         sync: false
+      - key: STANDALONE
+        value: true
+      - key: REGION
+        sync: false
+      - key: COOKIES_PATH
+        sync: false
+      - key: POWERPLAY_PENDING_URL
+        value: https://powerplay.generac.com/app/powerplay3-server/api/OpportunitySummary/Pending/Dealer?PageSize=1000
+      - key: POWERPLAY_CLAIM_URL
+        value: https://powerplay.generac.com/app/powerplay3-server/api/Opportunity/Claim
+      - key: POLL_INTERVAL
+        value: "30"
   - type: worker
     name: lead-claimer
     runtime: python

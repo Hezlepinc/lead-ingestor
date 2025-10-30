@@ -25,6 +25,17 @@ API_ROOT = os.getenv("POWERPLAY_API_ROOT")
 JOB_COLLECTION = os.getenv("JOB_COLLECTION", "jobs")
 CLAIMS_COLLECTION = os.getenv("CLAIMS_COLLECTION", "claims")
 MAX_PARALLEL = int(os.getenv("MAX_PARALLEL_CLAIMS", "5"))
+STANDALONE = os.getenv("STANDALONE", "false").lower() == "true"
+POLL_INTERVAL = int(os.getenv("POLL_INTERVAL", "30"))
+PENDING_URL = os.getenv(
+    "POWERPLAY_PENDING_URL",
+    "https://powerplay.generac.com/app/powerplay3-server/api/OpportunitySummary/Pending/Dealer?PageSize=1000",
+)
+CLAIM_URL_DIRECT = os.getenv(
+    "POWERPLAY_CLAIM_URL",
+    "https://powerplay.generac.com/app/powerplay3-server/api/Opportunity/Claim",
+)
+COOKIES_PATH = os.getenv("COOKIES_PATH", f"./cookies/{(os.getenv('REGION', 'Central FL')).lower().replace(' ', '-')}.json")
 
 # SignalR-related (optional)
 HUB_URL = os.getenv("POWERPLAY_LEADPOOL_HUB")
@@ -85,6 +96,45 @@ def try_claim(opportunity_id: str, id_token: str) -> int:
         url_b = claim_endpoint_b(opportunity_id)
         body = {"dealerId": int(DEALER_ID)} if DEALER_ID else {}
         r = requests.post(url_b, headers=bearer(id_token), json=body or None, timeout=20)
+        return r.status_code
+    except Exception:
+        return 0
+
+
+def load_cookies(path: str) -> dict:
+    try:
+        with open(path, "r") as f:
+            data = json.load(f)
+            items = data.get("cookies", data) if isinstance(data, dict) else data
+            return {c.get("name"): c.get("value") for c in items}
+    except Exception as e:
+        raise FileNotFoundError(f"Cookie load failed {path}: {e}")
+
+
+def get_pending_leads(cookies: dict = None, id_token: str = None):
+    headers = {"Accept": "application/json"}
+    if id_token:
+        headers.update({"Authorization": f"Bearer {id_token}"})
+    r = requests.get(PENDING_URL, headers=headers, cookies=cookies or {}, timeout=20)
+    r.raise_for_status()
+    data = r.json()
+    if isinstance(data, list):
+        return data
+    if isinstance(data, dict):
+        if isinstance(data.get("pagedResults"), list):
+            return data["pagedResults"]
+        if isinstance(data.get("data"), list):
+            return data["data"]
+    return []
+
+
+def claim_direct(opportunity_id: str, cookies: dict = None, id_token: str = None) -> int:
+    headers = {"Accept": "application/json", "Content-Type": "application/json"}
+    if id_token:
+        headers.update({"Authorization": f"Bearer {id_token}"})
+    payload = {"opportunityId": opportunity_id}
+    try:
+        r = requests.post(CLAIM_URL_DIRECT, headers=headers, cookies=cookies or {}, json=payload, timeout=20)
         return r.status_code
     except Exception:
         return 0
@@ -211,10 +261,64 @@ def start_signalr_listener():
     Thread(target=run, daemon=True).start()
 
 
+def standalone_poller_loop():
+    print("🚀 Python standalone poller active...")
+    cookies = None
+    try:
+        cookies = load_cookies(COOKIES_PATH)
+        print(f"🍪 Cookies loaded from {COOKIES_PATH}")
+    except Exception as e:
+        print(f"⚠️ No cookies found ({e}). Will try Bearer only.")
+
+    while True:
+        try:
+            id_token = None
+            try:
+                id_token = fetch_id_token(REGION)
+            except Exception:
+                id_token = None
+
+            leads = get_pending_leads(cookies=cookies, id_token=id_token)
+            if not leads:
+                print(f"[{datetime.now().strftime('%H:%M:%S')}] No pending leads...")
+            for item in leads:
+                opp = str(item.get("opportunityId") or item.get("id") or "").strip()
+                if not opp:
+                    continue
+                code = 0
+                if id_token:
+                    # Try API_ROOT claim style first, then direct claim URL
+                    code = try_claim(opp, id_token)
+                    if code not in (200, 201, 204):
+                        code = claim_direct(opp, cookies=cookies, id_token=id_token)
+                else:
+                    code = claim_direct(opp, cookies=cookies, id_token=None)
+
+                if code in (200, 201, 204):
+                    try:
+                        db[CLAIMS_COLLECTION].insert_one({
+                            "opportunityId": opp,
+                            "region": REGION,
+                            "status": "success",
+                            "ts": now(),
+                        })
+                    except Exception:
+                        pass
+                    print(f"✅ Claimed {opp} ({REGION})")
+                else:
+                    print(f"⚠️ Claim failed {opp}: {code}")
+        except Exception as e:
+            print(f"⚠️ Standalone loop error: {e}")
+        time.sleep(POLL_INTERVAL)
+
+
 if __name__ == "__main__":
-    # Start optional SignalR listener in background (if configured)
-    start_signalr_listener()
-    # Always run Mongo job consumer
-    mongo_worker_loop()
+    if STANDALONE:
+        standalone_poller_loop()
+    else:
+        # Start optional SignalR listener in background (if configured)
+        start_signalr_listener()
+        # Always run Mongo job consumer
+        mongo_worker_loop()
 
 
