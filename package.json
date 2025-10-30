@@ -4,7 +4,9 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "build": "tsc -p tsconfig.json",
+    "dev": "ts-node-dev --respawn --transpile-only ts/index.ts",
+    "start": "node dist/index.js",
     "test": "node scripts/testPowerplay.js",
     "export:events": "node scripts/export-events.js",
     "export:mongo": "node scripts/exportEvents.js",
@@ -17,6 +19,13 @@
     "probe:pp": "node scripts/probe-powerplay.js",
     "cookies:refresh": "node scripts/refreshAllCookies.js",
     "render:start": "npx playwright install chromium && node src/index.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "ts-node-dev": "^2.0.0",
+    "vitest": "^2.1.4",
+    "@types/node": "^20.12.12",
+    "eslint": "^9.12.0"
   },
   "dependencies": {
     "@microsoft/signalr": "^8.0.6",

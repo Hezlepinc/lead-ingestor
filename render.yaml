@@ -39,6 +39,33 @@ services:
       - key: SCHEDULER_LINK
         sync: false
   - type: worker
+    name: lead-claim-worker
+    runtime: node
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: node dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: REGIONS
+        sync: false
+      - key: ENABLE_SIGNALR
+        value: "true"
+      - key: POLL_INTERVAL_MS
+        value: "1000"
+      - key: AUTO_CLAIM
+        value: "true"
+      - key: COOKIES_DIR
+        value: /data/auth
+      - key: POWERPLAY_API_ROOT
+        value: https://powerplay.generac.com/app/powerplay3-server/api
+    disk:
+      name: auth
+      mountPath: /data
+      sizeGB: 1
+  - type: worker
     name: fast-claim-worker
     runtime: python
     plan: starter
