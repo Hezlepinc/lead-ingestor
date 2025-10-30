@@ -27,12 +27,21 @@ async function refreshForRegion(region) {
   try {
     await page.goto(loginUrl, { waitUntil: 'networkidle' });
 
-    // Adjust selectors to your PowerPlay login form
-    await page.fill('input[name="username"]', region.username);
-    await page.fill('input[name="password"]', region.password);
-    await page.click('button[type="submit"]');
+    // Wait for either login form or redirect
+    await page.waitForLoadState('domcontentloaded');
 
-    await page.waitForLoadState('networkidle');
+    // Try to detect login fields
+    const userSel = 'input[name="username"], input#username, input[id*="UserName"]';
+    const passSel = 'input[name="password"], input#password, input[id*="Password"]';
+    const submitSel = 'button[type="submit"], input[type="submit"]';
+
+    // Only fill if not already logged in
+    if (await page.locator(userSel).count()) {
+      await page.fill(userSel, region.username);
+      await page.fill(passSel, region.password);
+      await page.click(submitSel);
+      await page.waitForLoadState('networkidle');
+    }
 
     // Pull token directly from Session Storage
     const idToken = await page.evaluate(() => sessionStorage.getItem('id_token'));
