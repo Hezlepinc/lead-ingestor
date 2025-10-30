@@ -200,11 +200,10 @@ import { startSignalR } from "./signalr/signalr-listener.js";
         log(`⚠️ SignalR enabled but SIGNALR_HUB_URL is not set — skipping for ${region}`);
         continue;
       }
-      try {
-        startSignalR(region);
-      } catch (e) {
+      // Ensure async errors don't crash the process (e.g., 401 during negotiate)
+      startSignalR(region).catch((e) => {
         log(`⚠️ Failed to start SignalR for ${region}: ${e.message}`);
-      }
+      });
     }
 
     await new Promise((r) => setTimeout(r, 1000)); // small stagger
