@@ -21,20 +21,20 @@
     "render:start": "npx playwright install chromium && node src/index.js"
   },
   "devDependencies": {
-    "typescript": "^5.6.3",
-    "ts-node-dev": "^2.0.0",
-    "vitest": "^2.1.4",
     "@types/node": "^20.12.12",
-    "eslint": "^9.12.0"
+    "eslint": "^9.12.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.3",
+    "vitest": "^4.0.5"
   },
   "dependencies": {
     "@microsoft/signalr": "^8.0.6",
-    "axios": "^1.7.7",
     "@sendgrid/mail": "^8.1.0",
+    "axios": "^1.7.7",
     "dotenv": "^16.6.1",
-    "mongoose": "^8.7.0",
-    "playwright": "^1.48.0",
     "express": "^4.19.2",
-    "mongodb": "^6.9.0"
+    "mongodb": "^6.9.0",
+    "mongoose": "^8.7.0",
+    "playwright": "^1.48.0"
   }
 }

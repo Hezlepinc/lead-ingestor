@@ -196,6 +196,10 @@ import { startSignalR } from "./signalr/signalr-listener.js";
 
     // Optionally start SignalR lead listener per region
     if (process.env.ENABLE_SIGNALR === "true") {
+      if (!process.env.SIGNALR_HUB_URL) {
+        log(`⚠️ SignalR enabled but SIGNALR_HUB_URL is not set — skipping for ${region}`);
+        continue;
+      }
       try {
         startSignalR(region);
       } catch (e) {
