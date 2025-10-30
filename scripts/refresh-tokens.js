@@ -28,40 +28,23 @@ async function refreshForRegion(region) {
   try {
     await page.goto(loginUrl, { waitUntil: 'domcontentloaded' });
 
-    // wait for redirect to Auth0 login
-    await page.waitForURL("**id.generac.com/u/login/**", { timeout: 25000 }).catch(() => {});
-    await page.waitForLoadState("domcontentloaded");
+    // --- STEP 1: Navigate to Auth0 login ---
+    await page.waitForURL("**id.generac.com/u/login/**", { timeout: 30000 }).catch(() => {});
+    await page.waitForSelector("#username", { timeout: 25000 });
 
-    // fill email
-    const emailSel = 'input[name="username"], input[name="email"], input#username';
-    await page.waitForSelector(emailSel, { timeout: 20000 });
-    await page.fill(emailSel, region.username);
+    // --- STEP 2: Fill email and press Enter ---
+    await page.fill("#username", region.username);
+    await page.keyboard.press("Enter");
 
-    // Auth0 sometimes has hidden submit buttons; click the visible one only
-    const continueButtons = await page.$$('button[type="submit"], button[name="action"], button:has-text("Continue")');
-    for (const b of continueButtons) {
-      if (await b.isVisible()) {
-        await b.click({ force: true });
-        break;
-      }
-    }
+    // --- STEP 3: Wait for password field ---
+    await page.waitForSelector("#password", { timeout: 30000 });
+    await page.fill("#password", region.password);
 
-    // Wait until password field appears
-    const passSel = 'input[name="password"], input#password, input[id*="Password"]';
-    await page.waitForSelector(passSel, { timeout: 25000 });
-    await page.fill(passSel, region.password);
+    // --- STEP 4: Press Enter again to submit ---
+    await page.keyboard.press("Enter");
 
-    // Click visible login/continue button again
-    const loginButtons = await page.$$('button[type="submit"], button[name="action"], button:has-text("Continue"), button:has-text("Log in")');
-    for (const b of loginButtons) {
-      if (await b.isVisible()) {
-        await b.click({ force: true });
-        break;
-      }
-    }
-
-    // Wait until redirected back to PowerPlay dashboard
-    await page.waitForURL("**powerplay.generac.com/app**", { timeout: 40000 });
+    // --- STEP 5: Wait until redirected back to PowerPlay ---
+    await page.waitForURL("**powerplay.generac.com/app**", { timeout: 45000 });
     await page.waitForLoadState("networkidle");
 
     // Pull token directly from Session Storage
