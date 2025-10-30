@@ -1,0 +1,5 @@
+export const log = (...args) => console.log(...args);
+export const warn = (...args) => console.warn(...args);
+export const err = (...args) => console.error(...args);
+
+

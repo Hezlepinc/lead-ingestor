@@ -1,83 +1,69 @@
-import os, time, threading, requests
-from pymongo import MongoClient
-from dotenv import load_dotenv
+import os, time, requests
+from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor
+from pymongo import MongoClient, ASCENDING
+from bson.objectid import ObjectId
+from token_client import get_token
 
-load_dotenv()
-
-MONGO = MongoClient(os.getenv("MONGODB_URI"))
-db = MONGO.get_default_database()
+MONGO_URI = os.getenv("MONGODB_URI")
 API_ROOT = os.getenv("POWERPLAY_API_ROOT")
+JOB_COLLECTION = os.getenv("JOB_COLLECTION", "jobs")
+CLAIMS_COLLECTION = os.getenv("CLAIMS_COLLECTION", "claims")
 MAX_PARALLEL = int(os.getenv("MAX_PARALLEL_CLAIMS", "5"))
 
+client = MongoClient(MONGO_URI, maxPoolSize=20)
+db = client.get_default_database()
 
-def get_headers(region):
-    auth = db.Auth.find_one({"region": region})
-    if not auth:
-        return None
-    cookies = []
-    if auth.get("xsrf"):
-        cookies.append(f"XSRF-TOKEN={auth['xsrf']}")
-    return {
-        "accept": "application/json, text/plain, */*",
-        "content-type": "application/json",
-        "authorization": f"Bearer {auth.get('jwt','')}",
-        "cookie": "; ".join(cookies),
-        "referer": "https://powerplay.generac.com/",
-    }
+db[CLAIMS_COLLECTION].create_index([("opportunityId", ASCENDING), ("region", ASCENDING)], unique=True)
+db[JOB_COLLECTION].create_index([("status", ASCENDING), ("createdAt", ASCENDING)])
 
 
-def claim(region, opp_id, headers):
-    url = f"{API_ROOT}/Opportunity/{opp_id}/Claim"
+def now():
+    return datetime.now(timezone.utc)
+
+
+def bearer(id_token):
+    return {"Authorization": f"Bearer {id_token}", "Accept": "application/json"}
+
+
+def claim_endpoint(opportunity_id):
+    return f"{API_ROOT}/Opportunity/Claim/{opportunity_id}"
+
+
+def process_job(job):
+    opp = job["payload"]["opportunityId"]
+    region = job["payload"]["region"]
     try:
-        start = time.time()
-        res = requests.post(url, headers=headers, timeout=3)
-        latency = round((time.time() - start) * 1000)
-        db.Claim.insert_one(
-            {
-                "region": region,
-                "opportunityId": str(opp_id),
-                "status": res.status_code,
-                "latencyMs": latency,
-                "createdAt": time.time(),
-            }
-        )
-        print(f"⚡ {region} → {opp_id} → {res.status_code} ({latency} ms)")
+        id_token, exp = get_token(region)
+        url = claim_endpoint(opp)
+        r = requests.post(url, headers=bearer(id_token), timeout=20)
+        if r.status_code in (200, 201, 204):
+            db[CLAIMS_COLLECTION].insert_one({
+                "opportunityId": opp, "region": region, "status": "success", "ts": now()
+            })
+            print(f"✅ Claimed {opp} ({region})")
+        else:
+            print(f"⚠️ Claim failed {opp}: {r.status_code}")
     except Exception as e:
-        print(f"❌ {region} → {opp_id} failed {e}")
+        print(f"🟥 Error processing job {opp}: {e}")
+    finally:
+        db[JOB_COLLECTION].update_one({"_id": ObjectId(job["_id"])}, {"$set": {"status": "done"}})
 
 
-def scan_and_claim(region):
-    headers = get_headers(region)
-    if not headers:
-        return
-    try:
-        r = requests.get(
-            f"{API_ROOT}/OpportunitySummary/Pending/Dealer?PageSize=25",
-            headers=headers,
-            timeout=3,
-        )
-        data = r.json()
-        items = data.get("pagedResults", [])
-        for item in items:
-            status = str(item.get("status") or "").lower()
-            if "e0004" in status or "unclaimed" in status:
-                claim(region, item["id"], headers)
-    except Exception as e:
-        print(f"⚠️ {region}: poll error {e}")
-
-
-def worker(region):
-    while True:
-        scan_and_claim(region)
-        time.sleep(5)
+def main_loop():
+    with ThreadPoolExecutor(max_workers=MAX_PARALLEL) as pool:
+        print("🚀 Python claimer active...")
+        while True:
+            jobs = list(db[JOB_COLLECTION].find({"status": "queued"}).limit(MAX_PARALLEL))
+            if not jobs:
+                time.sleep(1)
+                continue
+            for job in jobs:
+                db[JOB_COLLECTION].update_one({"_id": job["_id"]}, {"$set": {"status": "processing"}})
+                pool.submit(process_job, job)
 
 
 if __name__ == "__main__":
-    regions = [a["region"] for a in db.Auth.find()]
-    print(f"🚀 Fast-claim worker started for: {regions}")
-    for region in regions:
-        threading.Thread(target=worker, args=(region,), daemon=True).start()
-    while True:
-        time.sleep(60)
+    main_loop()
 
 

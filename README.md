@@ -1,6 +1,6 @@
-# ⚡ Lead Ingestor (MVP)
+# ⚡ Lead Ingestor (Realtime PowerPlay — Final)
 
-An always-on Node.js service that ingests leads from multiple sources (scrapers, webhooks, APIs), routes them, notifies the office, and persists them for follow-up.
+An always-on Node.js service that ingests PowerPlay leads in realtime via SignalR, enqueues claim jobs in Mongo, and a Python worker claims them immediately using short-lived ID tokens fetched from a secure token microservice.
 
 The MVP starts with **Generac PowerPlay** interception and a shared pipeline for notifications and database storage.
 
@@ -26,7 +26,7 @@ Run in development
 
 bash
 Copy code
-npm start
+npm run render:start
 You should see:
 
 pgsql
@@ -69,7 +69,18 @@ lead-ingestor/
 ├── PROJECT_INSTRUCTIONS.md
 │
 ├── src/
-│ ├── index.js # Main entry point
+│ ├── index.js # Main entry point (starts token microservice + SignalR)
+│ ├── config.js # Central env config
+│ ├── logger.js # Simple logger (new modules)
+│ ├── db/
+│ │   └── mongo.js # Native driver (jobs/events indexes)
+│ ├── auth/
+│ │   ├── tokenProvider.js # Reads id_token from region cookie JSON
+│ │   └── tokenServer.js   # Express microservice: /token
+│ ├── queue/
+│ │   └── mongoQueue.js    # Enqueue claim jobs
+│ ├── signalr/
+│ │   └── signalr-listener.js # Listens for NewLeadForDealer events
 │ ├── config/db.js # MongoDB connection
 │ ├── models/Lead.js # Mongoose schema
 │ ├── utils/emailer.js # SendGrid helper (stub-safe)
@@ -88,6 +99,38 @@ lead-ingestor/
 │ └── server.js # (optional) API for external tools
 │
 └── scripts/
+### Env (Node)
+
+Set these in Render → lead-ingestor → Environment:
+
+- MONGO_URI
+- REGIONS
+- POWERPLAY_API_ROOT
+- SIGNALR_HUB_URL
+- COOKIES_PATH
+- ENABLE_SIGNALR=true
+- JOB_COLLECTION=jobs, EVENT_COLLECTION=events, OPPORTUNITY_COLLECTION=opportunities
+- TOKEN_SERVER_PORT=8080, TOKEN_SERVER_SECRET=change-this
+
+Start command (Render):
+
+```
+npx playwright install chromium && node src/index.js
+```
+
+### Python Worker
+
+Files in `python/`:
+- `fast_claim_worker.py` — reads jobs from Mongo and claims in parallel
+- `token_client.py` — fetches short-lived tokens from Node
+
+Env (Render → lead-ingestor-python):
+- MONGODB_URI
+- POWERPLAY_API_ROOT
+- MAX_PARALLEL_CLAIMS=5
+- JOB_COLLECTION=jobs, CLAIMS_COLLECTION=claims
+- TOKEN_SERVICE_URL=https://<node-app>.onrender.com/token
+- TOKEN_SERVICE_SECRET=match TOKEN_SERVER_SECRET
 ├── testPowerplay.js # Local test runner
 ├── cookieSaver.js # Save PowerPlay sessions
 └── deploy.sh # Render deployment helper

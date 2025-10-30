@@ -14,7 +14,9 @@
     "opps:fetch": "node scripts/fetch-opps-once.js",
     "opps:test": "node scripts/test-opportunities.mjs",
     "dev:pp": "node --enable-source-maps scripts/dev-powerplay.js",
-    "probe:pp": "node scripts/probe-powerplay.js"
+    "probe:pp": "node scripts/probe-powerplay.js",
+    "cookies:refresh": "node scripts/refreshAllCookies.js",
+    "render:start": "npx playwright install chromium && node src/index.js"
   },
   "dependencies": {
     "@microsoft/signalr": "^8.0.6",
@@ -22,6 +24,8 @@
     "@sendgrid/mail": "^8.1.0",
     "dotenv": "^16.6.1",
     "mongoose": "^8.7.0",
-    "playwright": "^1.48.0"
+    "playwright": "^1.48.0",
+    "express": "^4.19.2",
+    "mongodb": "^6.9.0"
   }
 }

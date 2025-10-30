@@ -7,6 +7,9 @@ import { Lead } from "./models/Lead.js";
 import { Opportunity } from "./models/Opportunity.js";
 import { startPowerPlayMonitor } from "./sources/powerplay.js";
 import { log } from "./utils/logger.js";
+import { getDb } from "./db/mongo.js";
+import { startTokenServer } from "./auth/tokenServer.js";
+import { startSignalR } from "./signalr/signalr-listener.js";
 
 (async () => {
   const __dirname = path.resolve();
@@ -33,6 +36,11 @@ import { log } from "./utils/logger.js";
 
   // --- Connect Mongo ---
   await connectDB();
+  // Ensure native driver connection for job queue + indexes
+  await getDb();
+
+  // --- Start token microservice for Python workers ---
+  startTokenServer();
 
   // --- Ensure Playwright Chromium is available in runtime (fallback to build step if present)
   try {
@@ -184,6 +192,15 @@ import { log } from "./utils/logger.js";
       startPowerPlayMonitor({ onLead: handleLead, url, cookiePath, region });
     } catch (err) {
       log(`❌ Failed to start monitor for ${region}: ${err.message}`);
+    }
+
+    // Optionally start SignalR lead listener per region
+    if (process.env.ENABLE_SIGNALR === "true") {
+      try {
+        startSignalR(region);
+      } catch (e) {
+        log(`⚠️ Failed to start SignalR for ${region}: ${e.message}`);
+      }
     }
 
     await new Promise((r) => setTimeout(r, 1000)); // small stagger

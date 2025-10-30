@@ -6,12 +6,26 @@ services:
     buildCommand: |
       npm install
       npx playwright install --with-deps chromium
-    startCommand: npm start
+    startCommand: npx playwright install chromium && node src/index.js
     envVars:
       - key: NODE_VERSION
         value: 20
       - key: MONGO_URI
         sync: false # set in Render dashboard
+      - key: ENABLE_SIGNALR
+        value: true
+      - key: SIGNALR_HUB_URL
+        sync: false
+      - key: TOKEN_SERVER_PORT
+        value: 8080
+      - key: TOKEN_SERVER_SECRET
+        sync: false
+      - key: JOB_COLLECTION
+        value: jobs
+      - key: EVENT_COLLECTION
+        value: events
+      - key: OPPORTUNITY_COLLECTION
+        value: opportunities
       - key: SENDGRID_API_KEY
         sync: false
       - key: SENDER_EMAIL
@@ -37,3 +51,11 @@ services:
         value: https://powerplay.generac.com/app/powerplay3-server/api
       - key: MAX_PARALLEL_CLAIMS
         value: "5"
+      - key: JOB_COLLECTION
+        value: jobs
+      - key: CLAIMS_COLLECTION
+        value: claims
+      - key: TOKEN_SERVICE_URL
+        sync: false
+      - key: TOKEN_SERVICE_SECRET
+        sync: false

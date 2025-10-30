@@ -46,7 +46,7 @@ function parseArgs(argv) {
 
   // --- Launch persistent browser context
   const browser = await chromium.launchPersistentContext(userDataDir, {
-    headless: false,
+    headless: (process.env.HEADLESS === "true" || process.env.PLAYWRIGHT_HEADLESS === "true"),
     viewport: { width: 1280, height: 900 },
     args: ["--start-maximized", "--no-sandbox", "--disable-blink-features=AutomationControlled"],
   });
@@ -96,21 +96,78 @@ function parseArgs(argv) {
 
   // --- Attempt to read token directly from browser storage and save ---
   try {
-    const directToken = await page.evaluate(() => {
+    const result = await page.evaluate(() => {
+      function findJwtInObject(obj) {
+        let match = '';
+        const stack = [obj];
+        while (stack.length) {
+          const cur = stack.pop();
+          if (!cur) continue;
+          if (typeof cur === 'string' && /^eyJ[A-Za-z0-9_-]+/.test(cur)) return cur;
+          if (typeof cur === 'object') {
+            for (const k of Object.keys(cur)) {
+              const v = cur[k];
+              if (typeof v === 'string' && /^eyJ[A-Za-z0-9_-]+/.test(v)) {
+                // prefer explicit id/access token fields
+                if (/id.?token/i.test(k)) return v;
+                match = match || v;
+              } else if (v && typeof v === 'object') {
+                stack.push(v);
+              }
+            }
+          }
+        }
+        return match;
+      }
+
+      // 1) Direct keys
       const keys = Object.keys(localStorage);
-      const tokenKey = keys.find(k => k.toLowerCase() === 'token' || /access|id[_-]?token|auth/.test(k.toLowerCase()));
       let val = '';
+      const tokenKey = keys.find(k => k.toLowerCase() === 'id_token')
+        || keys.find(k => /okta.*token/i.test(k))
+        || keys.find(k => /access|id[_-]?token|auth/.test(k.toLowerCase()));
       if (tokenKey) val = localStorage.getItem(tokenKey) || '';
+
+      // 2) Okta token storage blob
+      const oktaKeys = ['okta-token-storage', 'okta-token-storage.0'];
+      for (const k of oktaKeys) {
+        try {
+          const raw = localStorage.getItem(k);
+          if (!raw) continue;
+          const parsed = JSON.parse(raw);
+          const fromOkta = findJwtInObject(parsed);
+          if (fromOkta) {
+            val = fromOkta;
+            break;
+          }
+        } catch {}
+      }
+
+      // 3) sessionStorage fallback
       if (!val) {
         const ssKeys = Object.keys(sessionStorage);
-        const ssKey = ssKeys.find(k => k.toLowerCase() === 'token' || /access|id[_-]?token|auth/.test(k.toLowerCase()));
+        const ssKey = ssKeys.find(k => k.toLowerCase() === 'id_token')
+          || ssKeys.find(k => /okta.*token/i.test(k))
+          || ssKeys.find(k => /access|id[_-]?token|auth/.test(k.toLowerCase()));
         if (ssKey) val = sessionStorage.getItem(ssKey) || '';
+        if (!val) {
+          for (const k of ['okta-token-storage', 'okta-token-storage.0']) {
+            try {
+              const raw = sessionStorage.getItem(k);
+              if (!raw) continue;
+              const parsed = JSON.parse(raw);
+              const fromOkta = findJwtInObject(parsed);
+              if (fromOkta) { val = fromOkta; break; }
+            } catch {}
+          }
+        }
       }
+
       return val || '';
     });
-    if (directToken && /^eyJ[A-Za-z0-9_-]+/.test(directToken)) {
-      fs.writeFileSync(tokenFile, `Bearer ${directToken}`);
-      console.log(`🔑 Saved token from localStorage/sessionStorage → ${tokenFile}`);
+    if (result && /^eyJ[A-Za-z0-9_-]+/.test(result)) {
+      fs.writeFileSync(tokenFile, `Bearer ${result}`);
+      console.log(`🔑 Saved token from storage blobs → ${tokenFile}`);
     }
   } catch {}
 
