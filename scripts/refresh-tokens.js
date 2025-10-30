@@ -36,12 +36,20 @@ async function refreshForRegion(region) {
     await page.fill("#username", region.username);
     await page.keyboard.press("Enter");
 
-    // --- STEP 3: Wait for password field ---
-    await page.waitForSelector("#password", { timeout: 30000 });
-    await page.fill("#password", region.password);
-
-    // --- STEP 4: Press Enter again to submit ---
-    await page.keyboard.press("Enter");
+    // --- STEP 3/4: Wait for password field, fill, and submit; on failure, screenshot ---
+    try {
+      await page.waitForSelector('#password', { timeout: 25000 });
+      await page.fill('#password', region.password);
+      await page.keyboard.press('Enter');
+    } catch (err) {
+      console.error(`⚠️  ${region.name}: password screen not found (${err.message})`);
+      const safeName = region.name.replace(/\s+/g, '_');
+      await page.screenshot({
+        path: `/data/auth/${safeName}_no_password.png`,
+        fullPage: true,
+      });
+      throw err;
+    }
 
     // --- STEP 5: Wait until redirected back to PowerPlay ---
     await page.waitForURL("**powerplay.generac.com/app**", { timeout: 45000 });
