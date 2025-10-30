@@ -3,7 +3,7 @@ import { cfg } from "../config.js";
 import { enqueueClaimJob } from "../queue/mongoQueue.js";
 import { claimNow } from "../claim/claimNow.js";
 import { log, warn } from "../logger.js";
-import { getRegionToken } from "../auth/tokenProvider.js";
+import { getTokenForRegion } from "../auth/tokens.js";
 
 export async function startSignalR(region) {
   if (!cfg.signalRHubUrl) {
@@ -12,7 +12,10 @@ export async function startSignalR(region) {
   }
   const connection = new HubConnectionBuilder()
     .withUrl(cfg.signalRHubUrl, {
-      accessTokenFactory: async () => (await getRegionToken(region)).token,
+      accessTokenFactory: async () => {
+        const t = await getTokenForRegion(region);
+        return String(t).replace(/^Bearer\s+/i, "");
+      },
       transport: HttpTransportType.WebSockets,
     })
     .withAutomaticReconnect()
