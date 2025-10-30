@@ -28,20 +28,28 @@ async function refreshForRegion(region) {
   try {
     await page.goto(loginUrl, { waitUntil: 'domcontentloaded' });
 
-    // Wait for redirect to the Auth0 login page
+    // --- open PowerPlay, wait for redirect to Auth0 ---
     await page.waitForURL('**id.generac.com/u/login/**', { timeout: 20000 }).catch(() => {});
     await page.waitForLoadState('domcontentloaded');
 
-    // Fill login fields on Auth0 page
-    await page.fill('input[name="username"], input[name="email"]', region.username);
-    await page.click('button[type="submit"], button[name="action"]');
+    // --- Step 1:  email / username screen ---
+    const emailSel = 'input[name="username"], input[name="email"], input#username';
+    await page.waitForSelector(emailSel, { timeout: 15000 });
+    await page.fill(emailSel, region.username);
 
-    // Wait for password field to appear
-    await page.waitForSelector('input[name="password"]', { timeout: 15000 });
-    await page.fill('input[name="password"]', region.password);
-    await page.click('button[type="submit"], button[name="action"]');
+    // Auth0 shows a "Next" or "Continue" button after email
+    const nextSel = 'button[type="submit"], button[name="action"], button:has-text("Next"), button:has-text("Continue")';
+    await page.click(nextSel);
 
-    // Wait until redirected back to PowerPlay dashboard
+    // --- Step 2:  password screen ---
+    const passSel = 'input[name="password"], input#password, input[id*="Password"]';
+    await page.waitForSelector(passSel, { timeout: 20000 });
+    await page.fill(passSel, region.password);
+
+    // Click the login / continue button again
+    await page.click(nextSel);
+
+    // --- Wait until redirected back to PowerPlay ---
     await page.waitForURL('**powerplay.generac.com/app**', { timeout: 30000 });
     await page.waitForLoadState('networkidle');
 
