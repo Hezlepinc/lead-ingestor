@@ -136,6 +136,35 @@ Env (Render → lead-ingestor-python):
 └── deploy.sh # Render deployment helper
 See PROJECT_INSTRUCTIONS.md for deeper architectural notes.
 
+### Standalone Claimer (No Node / No SignalR)
+
+For a simple polling claimer, deploy the `lead-claimer` worker:
+
+Build command:
+
+```
+pip install -r lead-claimer/requirements.txt
+```
+
+Start command:
+
+```
+python lead-claimer/lead_claimer.py
+```
+
+Env:
+
+- REGION=Central FL
+- COOKIES_PATH=/opt/render/project/src/lead-claimer/cookies/central-fl.json (or mount a secret file)
+- MONGODB_URI=... (optional to log claims/events)
+- CLAIMS_COLLECTION=claims (optional)
+- EVENT_COLLECTION=events (optional)
+- POWERPLAY_PENDING_URL=https://powerplay.generac.com/app/powerplay3-server/api/OpportunitySummary/Pending/Dealer?PageSize=1000 (optional)
+- POWERPLAY_CLAIM_URL=https://powerplay.generac.com/app/powerplay3-server/api/Opportunity/Claim (optional)
+- POLL_INTERVAL=30 (optional)
+
+Cookies format (array of cookie objects) should include `id_token`, `access_token`, `.AspNetCore.Cookies`.
+
 🧰 Scripts
 Command Action
 npm start Run main entry src/index.js

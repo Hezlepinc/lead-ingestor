@@ -59,3 +59,26 @@ services:
         sync: false
       - key: TOKEN_SERVICE_SECRET
         sync: false
+  - type: worker
+    name: lead-claimer
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r lead-claimer/requirements.txt
+    startCommand: python lead-claimer/lead_claimer.py
+    envVars:
+      - key: REGION
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: CLAIMS_COLLECTION
+        value: claims
+      - key: EVENT_COLLECTION
+        value: events
+      - key: COOKIES_PATH
+        sync: false
+      - key: POWERPLAY_PENDING_URL
+        value: https://powerplay.generac.com/app/powerplay3-server/api/OpportunitySummary/Pending/Dealer?PageSize=1000
+      - key: POWERPLAY_CLAIM_URL
+        value: https://powerplay.generac.com/app/powerplay3-server/api/Opportunity/Claim
+      - key: POLL_INTERVAL
+        value: "30"
