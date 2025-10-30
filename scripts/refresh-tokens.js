@@ -21,7 +21,16 @@ function toSlug(name) {
 
 async function refreshForRegion(region) {
   console.log(`🔐 Refreshing token for ${region.name}...`);
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--single-process',
+      '--no-zygote'
+    ]
+  });
   const context = await browser.newContext();
   const page = await context.newPage();
 
@@ -38,12 +47,16 @@ async function refreshForRegion(region) {
 
     // --- STEP 3/4: Wait for password field, fill, and submit; on failure, screenshot ---
     try {
-      await page.waitForSelector('#password', { timeout: 25000 });
+      await page.waitForSelector('#password', { timeout: 60000 });
       await page.fill('#password', region.password);
       await page.keyboard.press('Enter');
     } catch (err) {
       console.error(`⚠️  ${region.name}: password screen not found (${err.message})`);
       const safeName = region.name.replace(/\s+/g, '_');
+      await page.screenshot({
+        path: `/data/auth/${safeName}_after_email.png`,
+        fullPage: true,
+      });
       await page.screenshot({
         path: `/data/auth/${safeName}_no_password.png`,
         fullPage: true,
