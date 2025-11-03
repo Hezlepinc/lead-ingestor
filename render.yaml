@@ -57,7 +57,7 @@ services:
         value: "1000"
       - key: AUTO_CLAIM
         value: "true"
-      - key: COOKIES_DIR
+      - key: COOKIES_PATH
         value: /data/auth
       - key: POWERPLAY_API_ROOT
         value: https://powerplay.generac.com/app/powerplay3-server/api

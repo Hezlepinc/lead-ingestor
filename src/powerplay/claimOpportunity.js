@@ -90,12 +90,16 @@ export async function claimOpportunity({
     let lastError = null;
     for (const claimUrl of candidates) {
       try {
+        log(`🎯 Attempting claim for ${region} → ${id}`);
         const res = await client.post(claimUrl, { data: {}, headers, timeout: timeoutMs });
         const status = res.status?.() ?? res.status;
         let body = "";
         try { body = (await res.text?.()) ?? (await res.body?.()).toString?.() ?? ""; } catch {}
         const ms = Date.now() - started;
         log(`⚡ ${region}: claim ${id} → ${status} (${ms} ms)`);
+        if (Number(status) === 401) {
+          log("❌ 401 Unauthorized – likely expired session or invalid cookies/token");
+        }
         const snippet = body ? String(body).slice(0, 500) : "";
         // Idempotent upsert of claim attempt summary
         await Claim.updateOne(

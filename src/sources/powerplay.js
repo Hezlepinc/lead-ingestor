@@ -42,9 +42,11 @@ export async function startPowerPlayMonitor({ region, url, cookiePath, onLead })
   if (fs.existsSync(cookiePath)) {
     const cookies = JSON.parse(fs.readFileSync(cookiePath, "utf8"));
     await context.addCookies(cookies);
-    log(`🍪 Loaded cookies for ${region}`);
+    const count = Array.isArray(cookies) ? cookies.length : (Array.isArray(cookies?.cookies) ? cookies.cookies.length : 0);
+    log(`🍪 Loaded ${count} cookies for ${region}`);
+    if (!count) log(`⚠️ Cookie file appears empty for ${region}: ${cookiePath}`);
   } else {
-    log(`⚠️ No cookie file found for ${region}`);
+    log(`⚠️ No cookie file found for ${region} at ${cookiePath}`);
   }
 
   // If we have a saved Bearer token, inject it for both browser JS and network layer
@@ -234,9 +236,14 @@ export async function startPowerPlayMonitor({ region, url, cookiePath, onLead })
   const dashboardUrl = `${baseUrl.replace(/\/$/, "")}/app/`;
   try {
     await page.goto(dashboardUrl, { waitUntil: "domcontentloaded", timeout: 60000 });
+    const currentUrl = page.url();
+    if (/login/i.test(currentUrl)) {
+      throw new Error("PowerPlay session expired. Run `npm run cookies:save` to refresh cookies.");
+    }
     log(`✅ ${region}: dashboard loaded`);
   } catch (err) {
     log(`❌ ${region}: failed to load dashboard ${err.message}`);
+    throw err; // Fail fast to avoid silent 401s later
   }
 
   // === Force periodic API polling ===
@@ -247,6 +254,7 @@ export async function startPowerPlayMonitor({ region, url, cookiePath, onLead })
     try {
       const res = await page.request.get(pollUrl, { timeout: Math.min(POLL_INTERVAL_MS - 500, 5000) });
       if (res.status() === 401) {
+        log(`❌ ${region}: poll returned 401 Unauthorized — cookies/token likely expired`);
         await refreshTokens("poll-401");
         return;
       }
