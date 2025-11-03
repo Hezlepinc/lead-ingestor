@@ -46,9 +46,8 @@ function parseArgs(argv) {
 
   // --- Launch persistent browser context
   const browser = await chromium.launchPersistentContext(userDataDir, {
-    headless: (process.env.HEADLESS === "true" || process.env.PLAYWRIGHT_HEADLESS === "true"),
-    viewport: { width: 1280, height: 900 },
-    args: ["--start-maximized", "--no-sandbox", "--disable-blink-features=AutomationControlled"],
+    headless: process.env.RENDER ? true : false,
+    args: ["--no-sandbox", "--disable-dev-shm-usage"],
   });
   // Reuse existing tab if present (persistent context may auto-open)
   let page = browser.pages()[0] || (await browser.newPage());
