@@ -53,6 +53,16 @@ export async function startPowerPlayCapture({ browser, region }) {
         const text = await res.text().catch(() => "");
         log(`🎯 ${region}: lead request FINISHED (${status})`);
 
+        if (status === 401) {
+          log(`⚠️  ${region}: caught 401 — refreshing token immediately`);
+          try {
+            const m = await import("../auth/tokenRefresher.js");
+            await m.refreshToken(region);
+          } catch (e) {
+            log(`⚠️  ${region}: immediate token refresh failed: ${e.message}`);
+          }
+        }
+
         try {
           const data = JSON.parse(text);
           if (Array.isArray(data) && data.length > 0) {

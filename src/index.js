@@ -11,6 +11,7 @@ import { log } from "./utils/logger.js";
 import { getDb } from "./db/mongo.js";
 import { startTokenServer } from "./auth/tokenServer.js";
 import { startSignalR } from "./signalr/signalr-listener.js";
+import { scheduleTokenRefresh } from "./auth/tokenRefresher.js";
 
 (async () => {
   const __dirname = path.resolve();
@@ -188,6 +189,9 @@ import { startSignalR } from "./signalr/signalr-listener.js";
       await new Promise((r) => setTimeout(r, 60_000));
       continue;
     }
+
+    // Schedule automatic token refresh for each region
+    scheduleTokenRefresh(region);
 
     log(`🧭 Initializing capture for ${region} using ${cookiePath}`);
     log(`🕵️ Monitoring PowerPlay (${region}) → ${url}`);
