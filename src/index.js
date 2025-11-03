@@ -197,7 +197,10 @@ import { scheduleTokenRefresh } from "./auth/tokenRefresher.js";
     log(`🕵️ Monitoring PowerPlay (${region}) → ${url}`);
 
     try {
-      await startPowerPlayCapture({ browser, region });
+      // Fire-and-forget so other regions can start
+      startPowerPlayCapture({ browser, region }).catch((e) => {
+        log(`⚠️ Capture exited for ${region}: ${e.message}`);
+      });
     } catch (err) {
       log(`❌ Failed to start capture for ${region}: ${err.message}`);
     }
