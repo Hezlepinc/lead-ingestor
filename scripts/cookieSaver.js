@@ -37,7 +37,11 @@ function parseArgs(argv) {
     process.exit(1);
   }
 
-  const basePath = path.join(COOKIES_DIR, `${regionName}`);
+  // Use slugified filenames to avoid duplicates like "Central FL" vs "central-fl"
+  const slugify = (s) => s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const slug = slugify(regionName);
+
+  const basePath = path.join(COOKIES_DIR, `${slug}`);
   const cookieFile = `${basePath}.json`;
   const storageDumpFile = `${basePath}-storage.json`;
   const storageStateFile = `${basePath}.state.json`;
