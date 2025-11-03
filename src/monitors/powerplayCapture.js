@@ -101,7 +101,7 @@ export async function startPowerPlayCapture({ browser, region }) {
         const res = await req.response();
         const status = res.status();
         const text = await res.text().catch(() => "");
-        log(`🎯 ${region}: lead request FINISHED (${status})`);
+        log(`🎯 ${region}: lead feed detected (${status})`);
 
         if (status === 401) {
           log(`⚠️  ${region}: caught 401 — refreshing token immediately`);
@@ -122,13 +122,12 @@ export async function startPowerPlayCapture({ browser, region }) {
         try {
           const data = JSON.parse(text);
           if (Array.isArray(data) && data.length > 0) {
-            log(`📦 ${region}: captured ${data.length} pending opportunities`);
+            log(`📦 ${region}: ${data.length} opportunities found`);
             await events.insertOne({
               ts: new Date(),
               region,
               type: "PendingDealer",
               url,
-              status,
               payload: data,
             });
           }

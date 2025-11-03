@@ -66,31 +66,24 @@ function parseArgs(argv) {
   console.log("   The script will automatically detect when the app is loaded and proceed.");
 
   // --- Angular-safe navigation to Opportunities view ---
-  console.log("➡️ Navigating to Opportunities page (Angular-safe)...");
+  // Land directly on the Pending Opportunities page
+  const powerplayUrl =
+    "https://powerplay.generac.com/app/#/opportunity/opportunitysummary/pending";
+
+  console.log(`➡️ Navigating directly to ${powerplayUrl}`);
+  await page.goto(powerplayUrl, { waitUntil: "networkidle", timeout: 90000 });
+
+  // Wait for the Pending/Dealer API call (confirm we hit the lead feed)
   try {
-    await page.waitForSelector("body", { timeout: 60000 });
-    // Try direct hash URL first
-    try {
-      await page.goto("https://powerplay.generac.com/app/#/opportunities", { waitUntil: "domcontentloaded", timeout: 30000 });
-    } catch {}
-    // Fallback: set hash manually
-    try {
-      await page.evaluate(() => { window.location.hash = "#/opportunities"; });
-    } catch {}
-    // Final fallback: attempt to click any nav element with Opportunities text
-    try {
-      await page.click('text=Opportunit', { timeout: 5000 });
-    } catch {}
-    await page.waitForFunction(
-      () => window.location.href.includes("/app/") ||
-        window.location.hash.includes("opportunit") ||
-        document.querySelector("app-opportunities") ||
-        Array.from(document.querySelectorAll("h1,h2,h3,nav,button,a,span")).some(e => e.textContent && e.textContent.toLowerCase().includes("opportunit")),
-      { timeout: 300000 } // allow up to 5 minutes for manual login
+    await page.waitForResponse(
+      (res) =>
+        res.url().includes("/OpportunitySummary/Pending/Dealer") &&
+        res.status() === 200,
+      { timeout: 30000 }
     );
-    console.log("✅ Opportunities view is active.");
-  } catch (err) {
-    console.warn("⚠️ Could not programmatically open Opportunities:", err.message);
+    console.log("🎯 PowerPlay lead feed confirmed during login.");
+  } catch {
+    console.log("⚠️ Did not detect Pending/Dealer request within 30s (may still be okay if no leads).");
   }
 
   // --- Attempt to read token directly from browser storage and save ---
