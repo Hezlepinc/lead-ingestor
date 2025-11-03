@@ -6,7 +6,7 @@ import { connectDB } from "./config/db.js";
 import { Lead } from "./models/Lead.js";
 import { Opportunity } from "./models/Opportunity.js";
 import { chromium } from "playwright";
-import { startPowerPlayCapture } from "./monitors/powerplayCapture.js";
+import { startPowerPlayMonitor } from "./sources/powerplay.js";
 import { log } from "./utils/logger.js";
 import { getDb } from "./db/mongo.js";
 import { startTokenServer } from "./auth/tokenServer.js";
@@ -169,9 +169,6 @@ import { scheduleTokenRefresh } from "./auth/tokenRefresher.js";
     return true;
   };
 
-  // --- Prepare a shared browser instance ---
-  const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
-
   // --- Launch each region sequentially ---
   for (let i = 0; i < cookieFiles.length; i++) {
     const url = POWERPLAY_URLS[i] || POWERPLAY_URLS[0];
@@ -193,16 +190,16 @@ import { scheduleTokenRefresh } from "./auth/tokenRefresher.js";
     // Schedule automatic token refresh for each region
     scheduleTokenRefresh(region);
 
-    log(`🧭 Initializing capture for ${region} using ${cookiePath}`);
+    log(`🧭 Initializing monitor for ${region} using ${cookiePath}`);
     log(`🕵️ Monitoring PowerPlay (${region}) → ${url}`);
 
     try {
       // Fire-and-forget so other regions can start
-      startPowerPlayCapture({ browser, region }).catch((e) => {
-        log(`⚠️ Capture exited for ${region}: ${e.message}`);
+      startPowerPlayMonitor({ onLead: handleLead, url, cookiePath, region }).catch((e) => {
+        log(`⚠️ Monitor exited for ${region}: ${e.message}`);
       });
     } catch (err) {
-      log(`❌ Failed to start capture for ${region}: ${err.message}`);
+      log(`❌ Failed to start monitor for ${region}: ${err.message}`);
     }
 
     await new Promise((r) => setTimeout(r, 1000)); // small stagger

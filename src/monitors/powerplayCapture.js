@@ -70,6 +70,14 @@ export async function startPowerPlayCapture({ browser, region }) {
     }
   } catch {}
 
+  // PRE-FETCH: earliest interception for Pending/Dealer feed
+  try {
+    await context.route("**/OpportunitySummary/Pending/Dealer", (route) => {
+      log(`🧭 ${region}: pre-fetch intercepted @ ${Date.now()}`);
+      route.continue();
+    });
+  } catch {}
+
   const page = await context.newPage();
 
   const baseUrl = "https://powerplay.generac.com/app/";
