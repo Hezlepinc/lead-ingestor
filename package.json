@@ -24,6 +24,9 @@
     "tokens:refresh": "node scripts/tokenRefresher.js",
     "tokens:refresh:now": "node scripts/tokenRefresher.js"
   },
+  "engines": {
+    "node": "20.x"
+  },
   "devDependencies": {
     "@types/node": "^20.12.12",
     "eslint": "^9.12.0",
