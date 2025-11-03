@@ -33,7 +33,67 @@ export async function refreshToken(region) {
     });
     const page = await context.newPage();
     await page.goto("https://powerplay.generac.com/app/", { waitUntil: "domcontentloaded", timeout: 60000 });
-    const newToken = await page.evaluate(() => localStorage.getItem("id_token"));
+
+    // Try to retrieve a JWT from various storage locations (mirrors cookieSaver heuristics)
+    const newToken = await page.evaluate(() => {
+      function isJwt(str) { return typeof str === 'string' && /^eyJ[A-Za-z0-9_-]+\./.test(str); }
+      function findJwtInObject(obj) {
+        try {
+          const stack = [obj];
+          while (stack.length) {
+            const cur = stack.pop();
+            if (!cur) continue;
+            if (typeof cur === 'string' && isJwt(cur)) return cur;
+            if (typeof cur === 'object') {
+              for (const k of Object.keys(cur)) {
+                const v = cur[k];
+                if (typeof v === 'string' && isJwt(v)) return v;
+                if (v && typeof v === 'object') stack.push(v);
+              }
+            }
+          }
+        } catch {}
+        return '';
+      }
+      // 1) Explicit keys in localStorage
+      const lKeys = Object.keys(localStorage);
+      for (const key of [
+        'token',
+        'id_token',
+        'access_token',
+        ...lKeys
+      ]) {
+        try {
+          const val = localStorage.getItem(key) || '';
+          if (isJwt(val)) return val;
+        } catch {}
+      }
+      // 2) Okta token storage blobs
+      for (const k of ['okta-token-storage', 'okta-token-storage.0']) {
+        try {
+          const raw = localStorage.getItem(k) || sessionStorage.getItem(k);
+          if (!raw) continue;
+          const parsed = JSON.parse(raw);
+          const found = findJwtInObject(parsed);
+          if (isJwt(found)) return found;
+        } catch {}
+      }
+      // 3) sessionStorage keys
+      const sKeys = Object.keys(sessionStorage);
+      for (const key of [
+        'token',
+        'id_token',
+        'access_token',
+        ...sKeys
+      ]) {
+        try {
+          const val = sessionStorage.getItem(key) || '';
+          if (isJwt(val)) return val;
+        } catch {}
+      }
+      return '';
+    });
+
     if (newToken && newToken.startsWith("ey")) {
       const outPath = `/data/auth/${region.toLowerCase().replace(/\s+/g, "-")}-token.txt`;
       fs.writeFileSync(outPath, `Bearer ${newToken}`);

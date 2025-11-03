@@ -108,6 +108,12 @@ export async function startPowerPlayCapture({ browser, region }) {
           try {
             const m = await import("../auth/tokenRefresher.js");
             await m.refreshToken(region);
+            // Apply new token to this context immediately
+            const bearerPath = path.join(baseDir, `${slug}-token.txt`);
+            if (fs.existsSync(bearerPath)) {
+              const bearer = (fs.readFileSync(bearerPath, "utf8").trim() || "");
+              if (bearer) await context.setExtraHTTPHeaders({ Authorization: bearer });
+            }
           } catch (e) {
             log(`⚠️  ${region}: immediate token refresh failed: ${e.message}`);
           }
