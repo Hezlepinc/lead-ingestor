@@ -20,7 +20,8 @@
     "dev:pp": "node --enable-source-maps scripts/dev-powerplay.js",
     "probe:pp": "node scripts/probe-powerplay.js",
     "cookies:refresh": "node scripts/refreshAllCookies.js",
-    "render:start": "npx playwright install chromium && node src/index.js"
+    "render:start": "npx playwright install chromium && node src/index.js",
+    "tokens:refresh": "node scripts/tokenRefresher.js"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",
