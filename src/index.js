@@ -5,7 +5,8 @@ import { execSync } from "child_process";
 import { connectDB } from "./config/db.js";
 import { Lead } from "./models/Lead.js";
 import { Opportunity } from "./models/Opportunity.js";
-import { startPowerPlayMonitor } from "./sources/powerplay.js";
+import { chromium } from "playwright";
+import { startPowerPlayCapture } from "./monitors/powerplayCapture.js";
 import { log } from "./utils/logger.js";
 import { getDb } from "./db/mongo.js";
 import { startTokenServer } from "./auth/tokenServer.js";
@@ -167,6 +168,9 @@ import { startSignalR } from "./signalr/signalr-listener.js";
     return true;
   };
 
+  // --- Prepare a shared browser instance ---
+  const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
+
   // --- Launch each region sequentially ---
   for (let i = 0; i < cookieFiles.length; i++) {
     const url = POWERPLAY_URLS[i] || POWERPLAY_URLS[0];
@@ -185,25 +189,13 @@ import { startSignalR } from "./signalr/signalr-listener.js";
       continue;
     }
 
-    log(`🧭 Initializing monitor for ${region} using ${cookiePath}`);
+    log(`🧭 Initializing capture for ${region} using ${cookiePath}`);
     log(`🕵️ Monitoring PowerPlay (${region}) → ${url}`);
 
     try {
-      startPowerPlayMonitor({ onLead: handleLead, url, cookiePath, region });
+      await startPowerPlayCapture({ browser, region });
     } catch (err) {
-      log(`❌ Failed to start monitor for ${region}: ${err.message}`);
-    }
-
-    // Optionally start SignalR lead listener per region
-    if (process.env.ENABLE_SIGNALR === "true") {
-      if (!process.env.SIGNALR_HUB_URL) {
-        log(`⚠️ SignalR enabled but SIGNALR_HUB_URL is not set — skipping for ${region}`);
-        continue;
-      }
-      // Ensure async errors don't crash the process (e.g., 401 during negotiate)
-      startSignalR(region).catch((e) => {
-        log(`⚠️ Failed to start SignalR for ${region}: ${e.message}`);
-      });
+      log(`❌ Failed to start capture for ${region}: ${err.message}`);
     }
 
     await new Promise((r) => setTimeout(r, 1000)); // small stagger
