@@ -138,6 +138,77 @@ export async function startPowerPlayCapture({ browser, region }) {
     } catch {}
   });
 
+  // --- SignalR/WebSocket capture: observe lead events BEFORE DOM updates ---
+  page.on("websocket", (ws) => {
+    const wsUrl = ws.url();
+    if (!/(signalr|lead-pool-service|hubs)/i.test(wsUrl)) return;
+    log(`🛰️ ${region}: SignalR connected ${wsUrl}`);
+
+    function parseSignalRText(text) {
+      const out = [];
+      try {
+        const parts = String(text).split("\u001e").filter(Boolean);
+        for (const p of parts) {
+          try {
+            const msg = JSON.parse(p);
+            if (msg && typeof msg === 'object') {
+              // ASP.NET Core protocol: { type, target, arguments }
+              if (msg.target && Array.isArray(msg.arguments)) {
+                out.push({ target: msg.target, payload: msg.arguments[0], raw: msg });
+                continue;
+              }
+              // Legacy JSON protocol: { M: method, A: [args] }
+              if (msg.M && Array.isArray(msg.A)) {
+                out.push({ target: msg.M, payload: msg.A[0], raw: msg });
+                continue;
+              }
+            }
+          } catch {}
+        }
+      } catch {}
+      return out;
+    }
+
+    ws.on("framereceived", async (ev) => {
+      try {
+        const data = ev.payload || ev.data || ev;
+        if (typeof data !== "string") return;
+        const eventsList = parseSignalRText(data);
+        for (const evt of eventsList) {
+          const name = String(evt.target || '').toLowerCase();
+          const isLeadEvent = [
+            'newleadfordealer',
+            'hasavailablelead',
+            'leadavailable',
+            'opportunityavailable',
+            'opportunitycreated',
+            'opportunitychanged',
+            'opportunitysummaryupdated',
+            'message',
+            'receive'
+          ].includes(name);
+          if (!isLeadEvent) continue;
+          log(`⚡ ${region}: SignalR ${evt.target}`);
+          try {
+            await events.insertOne({
+              ts: new Date(),
+              region,
+              type: 'SignalRLeadEvent',
+              target: evt.target,
+              url: wsUrl,
+              payload: evt.payload,
+              raw: evt.raw,
+            });
+          } catch {}
+        }
+      } catch {}
+    });
+
+    ws.on("close", () => {
+      log(`🔌 ${region}: SignalR closed`);
+    });
+  });
+
   // --- Optional: also capture Claim attempts ---
   page.on("request", (req) => {
     const url = req.url();
